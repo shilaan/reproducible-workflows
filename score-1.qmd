@@ -515,8 +515,8 @@ Original data obtained from the US Bureau of Labor Statistics. NLSY97 (National 
 |Criterion          |Original value|Precise reproduction|Approximate reproduction|Non-reproduction|
 |------|------|------|--------|--------|
 Sample size|n = 430|n = 430|366 $\le$ n $\le$ 495|n < 366 or n > 495|
-Focal coefficient|$\beta$ = .522|$\beta$ = .522|.444 $\le \beta \le$ .600|$\beta$ < .444 or $\beta$ > .600|
-Focal p-value|p < .001|p < .001|.001 $\le$ p $\le$ .051|p > .051|
+Coefficient|$\beta$ = .522|$\beta$ = .522|.444 $\le \beta \le$ .600|$\beta$ < .444 or $\beta$ > .600|
+p-value|p < .001|p < .001|.001 $\le$ p $\le$ .051|p > .051|
 
 NB: The sample size and focal coefficient are considered "approximately reproduced" when the reproduction result is within 15% of the original result. For *p*-values, the result is considered "approximately reproduced" when it is within 0.05 points of the original. 
 
