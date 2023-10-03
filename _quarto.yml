@@ -1,0 +1,32 @@
+project:
+  type: book
+  output-dir: docs
+
+book:
+  title: "Reproducible Workflows"
+  author: "Shilaan Alzahawi"
+  date: "10/2/2023"
+  chapters:
+    - index.qmd
+    - score-1.qmd
+
+#bibliography: 
+
+format:
+  html:
+    theme: [united, custom.scss]
+    link-external-newwindow: true
+    link-external-icon: true
+    self-contained: true
+    code-copy: true
+    code-tools: true
+    grid:
+      sidebar-width: 250px
+      body-width: 900px
+      margin-width: 300px
+
+#  pdf:
+#    documentclass: scrreprt
+
+
+

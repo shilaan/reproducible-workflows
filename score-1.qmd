@@ -1,0 +1,568 @@
+---
+title: "SCORE Criminology"
+author: "Shilaan Alzahawi"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(here) #for a project-based workflow
+library(tidyverse) #dplyr, the pipe, ggplot, etc
+library(broom) #for tidy results
+#load MASS after data construction, due to conflicts with dplyr::select()
+options(scipen = 3)
+```
+
+**Reproduction analyst(s):** Shilaan Alzahawi  
+**SCORE RR ID:** 2w9mo  
+**OSF Project:** <https://osf.io/3j7gq/?view_only=b0e33287a13146d1a2d9c4ad938be094>
+
+I did not deviate from the provided materials. All claims were successfully reproduced at the first attempt. To design the analysis, I consulted the following materials: 
+
+- The original paper: Bersani, B. E.; Doherty, E. (2013). When the ties that bind unwind: Examining the enduring and situational processes of change behind the marriage effect. *Criminology, 51*(2), 399. <https://doi.org/10.1111/1745-9125.12008>
+- The data posted at [https://www.nlsinfo.org/investigator/pages/search#](https://www.nlsinfo.org/investigator/pages/search#)
+- The bushel claims obtained [here](https://osf.io/5xqeh/?view_only=0498fe041e4c4753b4126ac28e9960a8)
+
+
+## Read data
+
+```{r read-data}
+#Data obtained from the NLS here https://www.bls.gov/nls/nlsy97.htm 
+NLSY97 <- read.table(here("data/NLSY97.dat"), sep = " ")
+
+#Run helper functions obtained from the NLS
+source(here("code/NLSY97-helper-functions.R"))
+
+#Rename variables using Question names instead of Reference Numbers
+NLSY97 <- qnames(NLSY97)
+```
+
+## Data cleaning and processing 
+
+### Incarceration data
+
+```{r incarceration}
+#Get incarceration data
+incarceration <- NLSY97 %>% 
+  select(contains("INCARC"))
+
+#Calculate the total number of months respondents were incarcerated
+months_incarcerated <- rowSums(incarceration, na.rm = TRUE)
+```
+
+### Age
+
+```{r age}
+#Age at start of survey
+age <- NLSY97$`CV_AGE_12/31/96_1997`
+
+#Calculate age for each respondent at each timepoint (156 timepoints in total)
+ages <- 1:nrow(NLSY97) %>% 
+  #Sequence from age at t=1 to 13 years later
+  map(~ seq(age[.x], age[.x] + 13, length.out = 156)) %>% 
+  unlist()
+
+#Create dataframe with respondent id and age over time
+all_ages <- tibble(
+  id = rep(1:nrow(NLSY97), each = 156),
+  age = ages
+)
+```
+
+
+
+### Create initial dataset
+
+```{r dataset}
+#Create clean dataframe with relevant variables
+df <- tibble(
+  #respondent id
+  id = 1:nrow(NLSY97),
+  #gender: 1 = male
+  male = ifelse(NLSY97$KEY_SEX_1997 == 2, 0, 1),
+  #race: 1 = black
+  black = ifelse(NLSY97$KEY_RACE_ETHNICITY_1997 == 1, 1, 0),
+  #household size: number of individuals below 18
+  household_size = NLSY97$CV_HH_UNDER_18_1997,
+  #family structure: 1 = intact
+  family_structure = ifelse(NLSY97$CV_YTH_REL_HH_CURRENT_1997 == 1, 1, 0),
+  #lack of heat: 1 = home lacked electricity and heat in previous month
+  lack_heat = ifelse(NLSY97$`YSAQ-003_1997` == 0, 1, 0),
+  #hard times
+  hard_times = NLSY97$`PC8-090_1997`,
+  #presence of dilapidated buildings: 1 = poorly kept buildings
+  dilapidated = ifelse(NLSY97$`YIR-1400_1998` == 3, 1, 0),
+  #education of parents
+  education_mother = NLSY97$CV_HGC_BIO_MOM_1997,
+  education_father = NLSY97$CV_HGC_BIO_DAD_1997,
+  #age of first sexual intercourse: 1 = at or before 13 years of age
+  age_sex = ifelse(NLSY97$`YSAQ-300_1999` < 14, 1, 0),
+  #age of first arrest: 1 = at or before 13 years of age
+  age_arrest = ifelse(NLSY97$`YSAQ-441_1997` < 14, 1, 0),
+  #age of first weed use: 1 = at or before 13 years of age
+  age_weed = ifelse(NLSY97$`YSAQ-370_1997` < 14, 1, 0),
+  #age of first cocaine use: 1 = at or before 13 years of age
+  age_cocaine = ifelse(NLSY97$`YSAQ-372C_1998` < 14, 1, 0),
+  #incarcerated: 1 = at least one episode of incarceration
+  incarcerated = ifelse(months_incarcerated > 0, 1, 0)
+) %>% 
+  rowwise() %>% 
+  mutate(
+  #disadvantaged = 1 if lack_heat or hard_times or dilapidated buildings
+  disadvantage = ifelse(
+    sum(lack_heat, hard_times, dilapidated, na.rm = TRUE) > 0, 1, 0
+    ),
+  #mean parental education
+  parental_education = mean(c(education_mother, education_father), na.rm = TRUE),
+  #drug use = 1 if used weed or cocaine before 14 years of age
+  age_drug = ifelse(sum(age_weed, age_cocaine, na.rm = TRUE) > 0, 1, 0),
+  #at risk = sum of age_sex, age_drug, age_arrest
+  at_risk = sum(age_sex, age_drug, age_arrest, na.rm = TRUE)
+  ) %>% 
+  #keep relevant variables
+  select(
+    id:family_structure, 
+    disadvantage:parental_education, 
+    at_risk, 
+    incarcerated
+    )
+```
+
+### Arrest status
+
+Arrest status is collected every month, with the following answer options:
+
+- 0: R not arrested in this month and not arrested in a previous month
+- 1 to 98: Number of times R arrested in this month
+- 99: R arrested previously but not in this month
+
+The authors recode this to a binary, monthly arrest status variable: nonevent months are coded 0, whereas months with at least one documented arrest are coded 1. 
+
+```{r arrest}
+arrest <- NLSY97 %>% 
+  #select relevant columns
+  select(contains("ARREST")) %>% 
+  #create participant id
+  mutate(
+    id = 1:nrow(NLSY97)
+  ) %>% 
+  #make data long: each time point becomes an individual row
+  pivot_longer(
+    cols = contains("ARREST"),
+    names_to = "time",
+    names_pattern = "ARREST_STATUS_?(.*)_XRND",
+    values_to = "arrest"
+  ) %>% 
+  group_by(id) %>% 
+  #calculate the total number of arrests for each respondent
+  mutate(
+    sum_arrests = sum(arrest, na.rm = TRUE)
+  ) %>% 
+  ungroup() %>% 
+  #keep only respondents who were arrested at least once
+  filter(sum_arrests > 0) %>% 
+  #recode arrest to binary indicator variable
+  mutate(
+    arrest = ifelse(arrest %in% c(0,99), 0, ifelse(is.na(arrest), NA, 1))
+  ) %>% 
+  select(!sum_arrests)
+
+#data quality checks
+#for each respondent, we should have 156 rows (13 years * 12 months) 
+#number_of_timepoints <- ncol(NLSY97 %>% select(contains("ARREST")))
+#number_of_respondents <- length(unique(arrest$id)) #in paper: 2,959 (Table 2)
+#nrow(arrest) == number_of_respondents * number_of_timepoints #TRUE
+```
+
+### Relationship status
+
+Relationship status is collected every month, with the following answer options:
+
+- 0 Never Married, Not Cohabitating
+- 1 Never Married, Cohabiting
+- 2 Married
+- 3 Legally Separated
+- 4 Divorced
+- 5 Widowed
+
+The authors create separate, mutually exclusive relationship indicators:
+
+- Single
+- Married
+- Legally separated
+- Divorced
+
+It is unclear what the authors do with widowers.
+
+```{r marital}
+marital <- NLSY97 %>% 
+  #select relevant columns
+  select(contains("MAR")) %>% 
+  #create participant id
+  mutate(
+    id = 1:nrow(NLSY97)
+  ) %>% 
+  #make data long: each time point becomes an individual row
+  pivot_longer(
+    cols = contains("MAR"),
+    names_to = "time",
+    names_pattern = "MAR_STATUS_?(.*)_XRND",
+    values_to = "marital_status"
+  ) %>%
+  #create indicator variables for relationship status
+  mutate(
+    #note that the paper does not disclose what to do with widowers
+    married = ifelse(marital_status == 2, 1, 0),
+    divorced = ifelse(marital_status == 4, 1, 0),
+    separated = ifelse(marital_status == 3, 1, 0),
+    single = ifelse(marital_status %in% c(0, 1), 1, 0)
+  ) %>% 
+  group_by(id) %>% 
+  #calculate the total number of months of marriage per respondent
+  mutate(
+    months_married = sum(married, na.rm = TRUE)
+  ) %>% 
+  ungroup() %>% 
+  #only keep respondents who were married for at least 1 month 
+  filter(months_married > 0) %>% 
+  select(!marital_status)
+
+#data quality checks
+#for each respondent, we should have 156 rows (13 years * 12 months) 
+#number_of_timepoints <- ncol(NLSY97 %>% select(contains("MAR")))
+#number_of_respondents <- length(unique(marital$id)) #in paper: 2,848 (Table 2)
+#nrow(marital) == number_of_respondents * number_of_timepoints #TRUE
+#"a third of the full sample has ever married by 2009:"
+#number_of_respondents / nrow(NLSY97) #35 percent
+#mean number of months married in paper is 47.86
+#mean(marital$months_married) #48.73 months
+#for those who have ever been married, marriage length is an average of 4 years
+#mean(marital$months_married) /12 #4.06 years
+#all data quality checks passed
+```
+
+## Create final, merged dataset
+
+```{r merge}
+#keep only the marriage data for respondents who were ever arrested
+marital <- marital %>% 
+  filter(id %in% arrest$id)
+
+#keep only the arrest data for respondents who were ever married
+arrest <- arrest %>% 
+  filter(id %in% marital$id)
+
+#keep only age data for respondent who were ever arrested and ever married
+all_ages <- all_ages %>% 
+  filter(id %in% arrest$id)
+ 
+#create final dataframe (long) with marriage data, arrest data, and covariates
+df_long <- left_join(marital, df, by = "id") %>% 
+  left_join(arrest, by = c("id", "time")) %>% 
+  mutate(
+    id = factor(id),
+    age = all_ages$age,
+    age_sq = age^2
+  ) %>%
+  group_by(id) %>%
+  mutate(
+    #mean relationship state for each individual (between-individual control)
+    married_mean = mean(married, na.rm = TRUE),
+    divorced_mean = mean(divorced, na.rm = TRUE),
+    separated_mean = mean(separated, na.rm = TRUE),
+    single_mean = mean(single, na.rm = TRUE)
+  )
+
+#data quality check: n=813 in paper
+#nlevels(df_long$id) #n=882
+```
+
+
+## Statistical model
+
+Information obtained from paper:
+
+- Generalized Mixed Model (binomial family with logit link)
+- Estimates obtained using penalized quasi-likelihood estimation (PQL)
+- Dependent variable: arrest status (log odds of arrest)
+- Time-varying covariates: relationship status (single, marriage, legal separation, divorce), age, and age squared
+- Time-invariant covariates: gender, race, household size, family structure, disadvantage, parental education, at-risk, incarceration history
+- Level-1 ('within') variables: relationship state, age, and age$^2$
+- Level-2 ('between') variables: aggregate relationship state, controls
+
+
+```{r model, message=FALSE}
+library(MASS)
+longest_marriage <- max(df_long$months_married)
+
+#Function to run the statistical model for a given number of months married
+run_model <- function(months = 1:longest_marriage) {
+  #run a generalized mixed model (binomial with logit link)
+  glmmPQL( #using penalized quasi-likelihood (PQL) estimation
+    #regress arrest on within-individual and between-individual predictors
+  fixed = arrest ~ 
+    #within-individual, time-varying predictors
+    divorced + separated + single + age + age_sq +
+    #between-individual, time-stable predictors
+    divorced_mean + separated_mean + single_mean + 
+    male + black + household_size + family_structure + disadvantage + 
+    parental_education + at_risk + incarcerated, 
+  random = ~ 1 | id, #each individual is a cluster with 156 timepoints
+  family = binomial, #we're predicting the log odds of arrest
+  data = df_long %>% filter(months_married %in% months),
+  verbose = FALSE
+  )
+}
+```
+
+\newpage
+
+## Claim evaluations
+
+Bushel claims obtained from the OSF [here](https://osf.io/5xqeh/?view_only=0498fe041e4c4753b4126ac28e9960a8). 
+
+::: {.panel-tabset}
+
+## Claim 1
+
+
+**Coded claim text (original paper):** Divorce has a significant
+    detrimental effect on offending and increases the likelihood of
+    arrest by 52 percent (table 3, model 2). Stated simply, an
+    individual is more criminally active when divorced compared with
+    when he or she is married, taking into account periods of legal
+    separation and time single.  
+    [Table 3, Within Individual: Divorce,
+    Model 2, Coeff. = .418, SE = .093, Sig. = p &lt; .001]
+
+**Reproduction data source(s)**:  
+[https://www.nlsinfo.org/investigator/pages/search#](https://www.nlsinfo.org/investigator/pages/search#)  
+
+**Description of reproduction data:**  
+Original data obtained from the US Bureau of Labor Statistics. NLSY97 (National Longitudinal Study of Youth 1997) downloaded from the NLS investigator on March 1, 2022.
+    
+    
+**Reproduction criteria**
+
+|Criterion          |Original value|Precise reproduction|Approximate reproduction|Non-reproduction|
+|------|------|------|--------|--------|
+Sample size         |n = 813|n = 813|691 $\le$ n $\le$ 935|n < 691 or n > 935|
+Coefficient   |$\beta$ = .418|$\beta$ = .418|.355 $\le \beta \le$ .481|$\beta$ < .355 or $\beta$ > .481|
+p-value       |p < .001|p < .001|.001 $\le$ p $\le$ .051|p > .051            |
+
+NB: The sample size and focal coefficient are considered "approximately reproduced" when the reproduction result is within 15% of the original result. For *p*-values, the result is considered "approximately reproduced" when it is within 0.05 points of the original. 
+
+**Analyst success criteria:** The claim will be considered reproducible if a generalized mixed model predicting the log odds of arrest meets the approximate reproduction criteria for the sample size, p-value, and the focal coefficient of divorce. 
+
+**Reproduction results**
+
+```{r g82z5k, cache=TRUE}
+claim1 <- run_model() #run model on entire sample
+#check fixed effect of divorce
+summary(claim1)$tTable["divorced", c("Value", "p-value")]
+claim1$dims$ngrps[1] #check sample size
+```
+
+**Reproduction outcome:** Based on the reproduction criteria, the claim did reproduce.
+
+
+## Claim 2: Model 1
+
+**Coded claim text (original paper):** For short marriages, those lasting
+    23 months or less (models 1 and 2), neither getting divorced nor
+    legally separating statistically alters one’s risk of arrest
+    compared with when they were married. Conversely, for those in
+    marriages lasting 24 months or longer, divorce is associated with a
+    significant increase in the likelihood of arrest.  
+    [Table 5. Effect
+    of Marital Dissolution on the Probability of Arrest by Marriage
+    Length, Within Individual: Divorce, Model 1 Coeff. = .113, SE =
+    .228]
+    
+    
+**Reproduction data source(s)**:  
+[https://www.nlsinfo.org/investigator/pages/search#](https://www.nlsinfo.org/investigator/pages/search#)  
+
+**Description of reproduction data:**  
+Original data obtained from the US Bureau of Labor Statistics. NLSY97 (National Longitudinal Study of Youth 1997) downloaded from the NLS investigator on March 1, 2022.
+
+**Reproduction criteria**
+
+|Criterion          |Original value|Precise reproduction|Approximate reproduction|Non-reproduction|
+|------|------|------|--------|--------|
+Sample size|n = 121|n = 121|103 $\le$ n $\le$ 139|n < 103 or n > 139|
+p-value|p > .05|p > .05|0 < p $\le$ .05|p = 0            |
+
+NB: The sample size and focal coefficient are considered "approximately reproduced" when the reproduction result is within 15% of the original result. For *p*-values, the result is considered "approximately reproduced" when it is within 0.05 points of the original. 
+
+
+**Analyst success criteria:** The claim will be considered reproducible if a generalized mixed model predicting the log odds of arrest meets the approximate reproduction criteria for the sample size and the precise reproduction criteria for the p-value (p > .05).
+
+**Reproduction results**
+
+```{r model1, cache=TRUE}
+#Model 1
+model1 <- run_model(months = 1:11) 
+summary(model1)$tTable["divorced", "p-value"] #check p-value model 1
+model1$dims$ngrps[1] #check sample size model 1
+```
+
+**Reproduction outcome:** Based on the reproduction criteria, the claim did reproduce.
+
+
+## Claim 2: Model 2
+
+**Coded claim text (original paper):** For short marriages, those lasting
+    23 months or less (models 1 and 2), neither getting divorced nor
+    legally separating statistically alters one’s risk of arrest
+    compared with when they were married. Conversely, for those in
+    marriages lasting 24 months or longer, divorce is associated with a
+    significant increase in the likelihood of arrest.  
+    [Table 5. Effect
+    of Marital Dissolution on the Probability of Arrest by Marriage
+    Length, Within Individual: Divorce, Model 2 Coeff. = -.442, SE = .396]
+    
+**Reproduction data source(s)**:  
+[https://www.nlsinfo.org/investigator/pages/search#](https://www.nlsinfo.org/investigator/pages/search#)  
+
+**Description of reproduction data:**  
+Original data obtained from the US Bureau of Labor Statistics. NLSY97 (National Longitudinal Study of Youth 1997) downloaded from the NLS investigator on March 1, 2022.
+
+**Reproduction criteria**
+
+|Criterion          |Original value|Precise reproduction|Approximate reproduction|Non-reproduction|
+|------|------|------|--------|--------|
+Sample size|n = 120|n = 120|102 $\le$ n $\le$ 138|n < 102 or n > 138|
+p-value|p > .05|p > .05|0 < p $\le$ .05|p = 0            |
+
+NB: The sample size and focal coefficient are considered "approximately reproduced" when the reproduction result is within 15% of the original result. For *p*-values, the result is considered "approximately reproduced" when it is within 0.05 points of the original. 
+
+**Analyst success criteria:** The claim will be considered reproducible if a generalized mixed model predicting the log odds of arrest meets the approximate reproduction criteria for the sample size and the precise reproduction criteria for the p-value (p > .05).
+
+**Reproduction results**
+
+```{r model2, cache = TRUE}
+#Model 2
+model2 <- run_model(months = 12:23) 
+summary(model2)$tTable["divorced", "p-value"] #check p-value model 2
+model2$dims$ngrps[1] #check sample size model 2
+```
+
+**Reproduction outcome:** Based on the reproduction criteria, the claim did reproduce.
+
+## Claim 2: Model 3
+
+**Coded claim text (original paper):** For short marriages, those lasting
+    23 months or less (models 1 and 2), neither getting divorced nor
+    legally separating statistically alters one’s risk of arrest
+    compared with when they were married. Conversely, for those in
+    marriages lasting 24 months or longer, divorce is associated with a
+    significant increase in the likelihood of arrest.  
+    [Table 5. Effect
+    of Marital Dissolution on the Probability of Arrest by Marriage
+    Length, Within Individual: Divorce, Model 3 Coeff. = .465, SE =
+    .151, Sig. = p &lt; .01]
+    
+**Reproduction data source(s)**:  
+[https://www.nlsinfo.org/investigator/pages/search#](https://www.nlsinfo.org/investigator/pages/search#)  
+
+**Description of reproduction data:**  
+Original data obtained from the US Bureau of Labor Statistics. NLSY97 (National Longitudinal Study of Youth 1997) downloaded from the NLS investigator on March 1, 2022.
+
+**Reproduction criteria**
+
+|Criterion          |Original value|Precise reproduction|Approximate reproduction|Non-reproduction|
+|------|------|------|--------|--------|
+Sample size|n = 142|n = 142|121 $\le$ n $\le$ 163|n < 121 or n > 163|
+Coefficient|$\beta$ = .465|$\beta$ = .465|.395 $\le \beta \le$ .535|$\beta$ < .395 or $\beta$ > .535|
+
+NB: The sample size and focal coefficient are considered "approximately reproduced" when the reproduction result is within 15% of the original result. For *p*-values, the result is considered "approximately reproduced" when it is within 0.05 points of the original. 
+
+**Analyst success criteria:** The claim will be considered reproducible if a generalized mixed model predicting the log odds of arrest meets the approximate reproduction criteria for the sample size and the approximate reproduction criteria for the coefficient of divorce.
+
+**Reproduction results**
+
+```{r model3, cache = TRUE}
+#Model 3
+model3 <- run_model(months = 24:35) 
+summary(model3)$tTable["divorced", "Value"] #check estimate model 3
+model3$dims$ngrps[1] #check sample size model 3
+```
+
+**Reproduction outcome:** Based on the reproduction criteria, the claim did reproduce.
+
+## Claim 2: Model 4
+
+**Coded claim text (original paper):** For short marriages, those lasting
+    23 months or less (models 1 and 2), neither getting divorced nor
+    legally separating statistically alters one’s risk of arrest
+    compared with when they were married. Conversely, for those in
+    marriages lasting 24 months or longer, divorce is associated with a
+    significant increase in the likelihood of arrest.  
+    [Table 5. Effect
+    of Marital Dissolution on the Probability of Arrest by Marriage
+    Length, Within Individual: Divorce, Model 4 Coeff. = .522, SE = .107, Sig. = p
+    &lt; .001]
+    
+**Reproduction data source(s)**:  
+[https://www.nlsinfo.org/investigator/pages/search#](https://www.nlsinfo.org/investigator/pages/search#)  
+
+**Description of reproduction data:**  
+Original data obtained from the US Bureau of Labor Statistics. NLSY97 (National Longitudinal Study of Youth 1997) downloaded from the NLS investigator on March 1, 2022.
+
+**Reproduction criteria**
+
+|Criterion          |Original value|Precise reproduction|Approximate reproduction|Non-reproduction|
+|------|------|------|--------|--------|
+Sample size|n = 430|n = 430|366 $\le$ n $\le$ 495|n < 366 or n > 495|
+Focal coefficient|$\beta$ = .522|$\beta$ = .522|.444 $\le \beta \le$ .600|$\beta$ < .444 or $\beta$ > .600|
+Focal p-value|p < .001|p < .001|.001 $\le$ p $\le$ .051|p > .051|
+
+NB: The sample size and focal coefficient are considered "approximately reproduced" when the reproduction result is within 15% of the original result. For *p*-values, the result is considered "approximately reproduced" when it is within 0.05 points of the original. 
+
+**Analyst success criteria:** The claim will be considered reproducible if a generalized mixed model predicting the log odds of arrest meets the approximate reproduction criteria for the sample size, the coefficient of divorce, and the p-value.
+
+**Reproduction results**
+
+```{r model4, cache=TRUE}
+#Model 4
+model4 <- run_model(months = 36:longest_marriage) 
+summary(model4)$tTable["divorced", c("Value", "p-value")] #check estimate + p-value model 4
+model4$dims$ngrps[1] #check sample size model 4
+```
+
+**Reproduction outcome:** Based on the reproduction criteria, the claim did reproduce.
+
+
+
+::: 
+
+## Description of materials provided    
+
+All materials on [the OSF project](https://osf.io/3j7gq/?view_only=b0e33287a13146d1a2d9c4ad938be094) may be shared publicly. Overview and description of the materials:
+
+- `BERSANI_Criminology_2013_zmYY_bushel_claims.md`  
+An overview of all claims extracted from the paper
+- `BERSANI_Criminology_2013_zmYY_2w9mo_SDR_PREREGISTRATION.xlsx`   
+Excel workbook with the preregistered reproduction criteria for all claims part of the reproduction attempt
+- `NLSY97.dat`   
+Data file (National Longitudinal Study of Youth 1997) downloaded from the NLS investigator
+- `codebook.txt`  
+Codebook (data dictionary) accompanying `NLSY97.dat`
+- `helper-functions.R`  
+Helper functions accompanying `NLSY97.dat`
+- `Analysis-script.Rmd`  
+Preregistered analysis script (on randomly shuffled, blinded data)
+- `Analysis-script.html`   
+Knitted output of the preregistered analysis script (on randomly shuffled, blinded data)
+- `Transparency Trail.Rmd`   
+Transparency trail of the reproduction attempt. This includes the analysis pipeline and full results/output of the analysis script (applied to the unblinded data)
+- `Transparency-Trail.pdf`   
+Knitted output of the transparency trail of the reproduction attempt. This includes the analysis pipeline and full results/output of the analysis script (applied to the unblinded data)
+
+
+## References
+
+Bersani, B. E.; Doherty, E. (2013). When the ties that bind unwind: Examining the enduring and situational processes of change behind the marriage effect. *Criminology, 51*(2), 399. <https://doi.org/10.1111/1745-9125.12008>
+
+Bureau of Labor Statistics, U.S. Department of Labor. National Longitudinal Survey of Youth 1997 cohort, 1997-2009. Produced and distributed by the Center for Human Resource Research (CHRR), The Ohio State University. Columbus, OH: 2019.
