@@ -28,9 +28,7 @@ I did not deviate from the provided materials. All claims were successfully repr
 
 Data were drawn from the Cooperative Institutional Research Program (CIRP) at the UCLA Higher Education Research Institute (HERI), using the Senior Survey (1998). A subsample was created that excluded 2-year colleges and universities, historically Black colleges and universities, and students and institutions with preestablished thresholds of missing cases or items; the authors excluded students who had missing data or marked other on race, and institutions with fewer than 15 respondents.  
 
-Data was obtained from the HERI Data Archives (https://heri.ucla.edu/heri-data-archive/) for academics. This data is part of the public archives for scholarly access. It should not be posted publicly; instead, interested researchers should navigate to https://heri.ucla.edu/data-archive/ to register for the data archive and download the data there.
-
-## Read data
+Data was obtained from the HERI Data Archives (<https://heri.ucla.edu/heri-data-archive/>) for academics. This data is part of the public archives for scholarly access. It should not be posted publicly; instead, interested researchers should navigate to <https://heri.ucla.edu/data-archive/> to register for the data archive and download the data there.
 
 Variables obtained from the 1998 Senior survey:
 
@@ -312,13 +310,14 @@ Taking these discrepancies into account, I run the following statistical model:
 
 $$
 \begin{split}
-Y_{ij} = &\gamma_{00} + \gamma_{01}(\text{AVG: URM}) + \gamma_{04} (\text{Control: Private}) + \gamma_{05} (\text{AVG: Curricular diversity}) + \gamma_{06}(\text{AVG: CRI}) + \\
-&\gamma_{07}(\text{AVG: Part-time job on campus}) + \gamma_{012}(\text{AVG: Female}) +  \gamma_{013}(\text{AVG: Involvement}) + \\
-& \gamma_{10}(\text{Curricular diversity}) + \gamma_{11}(\text{Curricular diversity}*\text{AVG: URM}) + \gamma_{12}(\text{Curricular diversity}*\text{AVG: Curricular diversity}) + \\
-&  \gamma_{13}(\text{Curricular diversity}*\text{AVG: CRI}) +  \gamma_{14}(\text{Curricular diversity}*\text{AVG: Part-time job on campus}) + \\
-& \gamma_{20}(\text{CRI}) + \gamma_{21}(\text{CRI}*\text{AVG: URM}) + \gamma_{22}(\text{CRI}*\text{AVG: Curricular diversity}) +  \gamma_{23}(\text{CRI}*\text{AVG: CRI}) + \\
-& \beta_{3j}(\text{Part-time job on campus}) + \beta_{8j}(\text{Native American}) + \beta_{9j}(\text{Asian}) +  \beta_{10j}(\text{African American}) + \beta_{11j}(\text{Hispanic}) + \\
-& \beta_{12j}(\text{Female}) + \beta_{13j}(\text{Involvement})
+Y_{ij} = ~&\gamma_{00} + \gamma_{01}(\text{AVG: URM}) + \gamma_{04} (\text{Control: Private}) + \gamma_{05} (\text{AVG: Curricular diversity}) +  \\
+&\gamma_{06}(\text{AVG: CRI}) +\gamma_{07}(\text{AVG: Part-time job on campus}) + \gamma_{012}(\text{AVG: Female}) +  \\
+&\gamma_{013}(\text{AVG: Involvement}) +  \gamma_{10}(\text{Curricular diversity}) + \gamma_{11}(\text{Curricular diversity}*\text{AVG: URM}) + \\
+&\gamma_{12}(\text{Curricular diversity}*\text{AVG: Curricular diversity}) +  \gamma_{13}(\text{Curricular diversity}*\text{AVG: CRI}) +  \\
+&\gamma_{14}(\text{Curricular diversity}*\text{AVG: Part-time job on campus}) +  \gamma_{20}(\text{CRI}) + \\
+&\gamma_{21}(\text{CRI}*\text{AVG: URM}) + \gamma_{22}(\text{CRI}*\text{AVG: Curricular diversity}) +  \gamma_{23}(\text{CRI}*\text{AVG: CRI}) + \\
+& \beta_{3j}(\text{Part-time job on campus}) + \beta_{8j}(\text{Native American}) + \beta_{9j}(\text{Asian}) +  \beta_{10j}(\text{African American}) + \\
+&\beta_{11j}(\text{Hispanic}) +  \beta_{12j}(\text{Female}) + \beta_{13j}(\text{Involvement})
 \end{split}
 $$
 
@@ -373,7 +372,7 @@ Bushel claims obtained from the OSF [here](https://osf.io/ah4bk/?view_only=0498f
 
 ## Claim 1
 
-**Coded claim 4 text (original paper):** Table 3 reports the results of the
+**Coded claim text (original paper):** Table 3 reports the results of the
     final HLM model for each of the three outcome measures. As shown in
     the first two columns of numbers in Table 3, the coefficients for
     the curricular diversity slope base ($\gamma_{10}$ = .08, t = 4.01) are
@@ -391,30 +390,32 @@ Bushel claims obtained from the OSF [here](https://osf.io/ah4bk/?view_only=0498f
 
 **Description of reproduction data:**  Original Data obtained from the Higher Education Research Institute (HERI). Cooperative Institutional Research Program (CIRP) College Senior Survey Trends downloaded from the CIRP data Data Archives on March 4, 2022.
 
+
+**Primary reproduction criteria**
+
+|Criterion          |Original value|Precise reproduction|Approximate reproduction|Non-reproduction|
+|------|------|------|--------|--------|
+Coefficient   |$\gamma_{10}$ = 0.08|$\gamma_{10}$ = 0.08|0.07 $\le \gamma_{10} \le$ 0.09|$\gamma_{10}$ < 0.07 or $\gamma_{10}$ > 0.09|
+Test statistic|t = 4.01|t = 4.01|3.41 $\le$ t $\le$ 4.61|t < 3.41 or t > 4.61|
+p-value       |p < .001|p < .001|.001 $\le$ p $\le$ .051|p > .051            |
+
+**Analyst success criteria:** Because not all covariates are available in the reproduction dataset (which will likely impact the coefficient estimates), the claim will be considered reproducible if it meets the approximate reproduction criteria for the *p*-value and the focal coefficient is of the same sign (i.e., a positive coefficient estimate). 
+
+**Reproduction results**
+
 ```{r mknxyd, warning=FALSE}
 fit_efficacy %>% 
   filter(term == "curricular_diversity") %>% 
   select(term, estimate, statistic, p.value)
 ```
 
-
-**Primary reproduction criteria**
-
-|Criterion          |Original value|Precise reproduction|Approximate reproduction|Non-reproduction|Reproduction result| 
-|--------|--------|--------|--------|--------|--------|
-Coefficient   |$\gamma_{10}$ = 0.08|$\gamma_{10}$ = 0.08|0.07 $\le \gamma_{10} \le$ 0.09|$\gamma_{10}$ < 0.07 or $\gamma_{10}$ > 0.09|$\gamma_{10}$ = 0.11|
-Test statistic|t = 4.01|t = 4.01|3.41 $\le$ t $\le$ 4.61|t < 3.41 or t > 4.61|t = 4.35 |
-p-value       |p < .001|p < .001|.001 $\le$ p $\le$ .051|p > .051            |p = .0000139|
-
-**Analyst success criteria:** Because not all covariates are available in the reproduction dataset (which will likely impact the coefficient estimates), the claim will be considered reproducible if it meets the approximate reproduction criteria for the *p*-value and the focal coefficient is of the same sign (i.e., a positive coefficient estimate). 
-
-**Reproduction outcome:** Based on these criteria, the claim did reproduce.
+**Reproduction outcome:** Based on the reproduction criteria, the claim did reproduce.
 
 
 
 ## Claim 2
 
-**Coded claim 4 text (original paper):** Table 3 reports the results of the
+**Coded claim text (original paper):** Table 3 reports the results of the
     final HLM model for each of the three outcome measures. As shown in
     the first two columns of numbers in Table 3, the coefficients for
     the CRI slope base ($\gamma_{20}$ = .14, t = 7.39) are statistically
@@ -430,29 +431,31 @@ p-value       |p < .001|p < .001|.001 $\le$ p $\le$ .051|p > .051            |p 
 
 **Description of reproduction data:**  Original Data obtained from the Higher Education Research Institute (HERI). Cooperative Institutional Research Program (CIRP) College Senior Survey Trends downloaded from the CIRP data Data Archives on March 4, 2022.
 
-    
+
+**Primary reproduction criteria**
+
+|Criterion          |Original value|Precise reproduction|Approximate reproduction|Non-reproduction|
+|------|------|------|--------|--------|
+Coefficient   |$\gamma_{20}$ = 0.14|$\gamma_{20}$ = 0.14|0.12 $\le \gamma_{20} \le$ 0.16|$\gamma_{20}$ < 0.12 or $\gamma_{20}$ > 0.16|
+Test statistic|t = 7.39|t = 7.39|6.28 $\le$ t $\le$ 8.50|t < 6.28 or t > 8.50|
+p-value       |p < .001|p < .001|.001 $\le$ p $\le$ .051|p > .051            |
+
+
+**Analyst success criteria:** Because not all covariates are available in the reproduction dataset (which will likely impact the coefficient estimates), the claim will be considered reproducible if it meets the approximate reproduction criteria for the *p*-value and the focal coefficient is of the same sign (i.e., a positive coefficient estimate). 
+
+**Reproduction results**
+
 ```{r m73y84}
 fit_efficacy %>% 
   filter(term == "cross_racial_int") %>% 
   select(term, estimate, statistic, p.value)
 ```
 
-**Primary reproduction criteria**
-
-|Criterion          |Original value|Precise reproduction|Approximate reproduction|Non-reproduction|Reproduction result| 
-|--------|--------|--------|--------|--------|--------|
-Coefficient   |$\gamma_{20}$ = 0.14|$\gamma_{20}$ = 0.14|0.12 $\le \gamma_{20} \le$ 0.16|$\gamma_{20}$ < 0.12 or $\gamma_{20}$ > 0.16|$\gamma_{20}$ = 0.05|
-Test statistic|t = 7.39|t = 7.39|6.28 $\le$ t $\le$ 8.50|t < 6.28 or t > 8.50|t = 6.20 |
-p-value       |p < .001|p < .001|.001 $\le$ p $\le$ .051|p > .051            |p = 5.86e-10|
-
-
-**Analyst success criteria:** Because not all covariates are available in the reproduction dataset (which will likely impact the coefficient estimates), the claim will be considered reproducible if it meets the approximate reproduction criteria for the *p*-value and the focal coefficient is of the same sign (i.e., a positive coefficient estimate). 
-
-**Reproduction outcome:** Based on these criteria, the claim did reproduce.
+**Reproduction outcome:** Based on the reproduction criteria, the claim did reproduce.
 
 ## Claim 3
 
-**Coded claim 4 text (original paper):** The second set of results in Table 3
+**Coded claim text (original paper):** The second set of results in Table 3
     shows the findings for the general academic skills measure. Again,
     focusing on the key variables of interest, the student-level
     characteristics of curricular diversity ($\gamma_{10}$ = .17, t =
@@ -469,29 +472,30 @@ p-value       |p < .001|p < .001|.001 $\le$ p $\le$ .051|p > .051            |p 
 
 **Description of reproduction data:**  Original Data obtained from the Higher Education Research Institute (HERI). Cooperative Institutional Research Program (CIRP) College Senior Survey Trends downloaded from the CIRP data Data Archives on March 4, 2022.
 
-    
+
+**Primary reproduction criteria**
+
+|Criterion          |Original value|Precise reproduction|Approximate reproduction|Non-reproduction|
+|------|------|------|--------|--------|
+Coefficient   |$\gamma_{10}$ = 0.17|$\gamma_{10}$ = 0.17|0.14 $\le \gamma_{10} \le$ 0.20|$\gamma_{10}$ < 0.14 or $\gamma_{10}$ > 0.20|
+Test statistic|t = 10.40|t = 10.40|8.84 $\le$ t $\le$ 11.96|t < 8.84 or t > 11.96|
+p-value       |p < .001|p < .001|.001 $\le$ p $\le$ .051|p > .051            |
+
+**Analyst success criteria:** Because not all covariates are available in the reproduction dataset (which will likely impact the coefficient estimates), the claim will be considered reproducible if it meets the approximate reproduction criteria for the *p*-value and the focal coefficient is of the same sign (i.e., a positive coefficient estimate). 
+
+**Reproduction results**
+
 ```{r bzyz9k, warning = FALSE}
 fit_academic %>% 
   filter(term == "curricular_diversity") %>% 
   select(term, estimate, statistic, p.value)
 ```
 
-
-**Primary reproduction criteria**
-
-|Criterion          |Original value|Precise reproduction|Approximate reproduction|Non-reproduction|Reproduction result| 
-|--------|--------|--------|--------|--------|--------|
-Coefficient   |$\gamma_{10}$ = 0.17|$\gamma_{10}$ = 0.17|0.14 $\le \gamma_{10} \le$ 0.20|$\gamma_{10}$ < 0.14 or $\gamma_{10}$ > 0.20|$\gamma_{10}$ = 0.14|
-Test statistic|t = 10.40|t = 10.40|8.84 $\le$ t $\le$ 11.96|t < 8.84 or t > 11.96|t = 5.23|
-p-value       |p < .001|p < .001|.001 $\le$ p $\le$ .051|p > .051            |p = .000000172|
-
-**Analyst success criteria:** Because not all covariates are available in the reproduction dataset (which will likely impact the coefficient estimates), the claim will be considered reproducible if it meets the approximate reproduction criteria for the *p*-value and the focal coefficient is of the same sign (i.e., a positive coefficient estimate). 
-
-**Reproduction outcome:** Based on these criteria, the claim did reproduce.
+**Reproduction outcome:** Based on the reproduction criteria, the claim did reproduce.
 
 ## Claim 4
 
-**Coded claim 4 text (original paper):** The second set of results in Table 3
+**Coded claim text (original paper):** The second set of results in Table 3
     shows the findings for the general academic skills measure. Again,
     focusing on the key variables of interest, the student-level
     characteristics of CRI ($\gamma_{20}$ = .16, t = 9.74) exerted
@@ -506,29 +510,31 @@ p-value       |p < .001|p < .001|.001 $\le$ p $\le$ .051|p > .051            |p 
 
 **Description of reproduction data:**  Original Data obtained from the Higher Education Research Institute (HERI). Cooperative Institutional Research Program (CIRP) College Senior Survey Trends downloaded from the CIRP data Data Archives on March 4, 2022.
 
-    
+
+**Primary reproduction criteria**
+
+|Criterion          |Original value|Precise reproduction|Approximate reproduction|Non-reproduction|
+|------|------|------|--------|--------|
+Coefficient   |$\gamma_{20}$ = 0.16|$\gamma_{20}$ = 0.16|0.14 $\le \gamma_{20} \le$ 0.18|$\gamma_{20}$ < 0.14 or $\gamma_{20}$ > 0.18|
+Test statistic|t = 9.74|t = 9.74|8.28 $\le$ t $\le$ 11.20|t < 8.28 or t > 11.20|
+p-value       |p < .001|p < .001|.001 $\le$ p $\le$ .051|p > .051            |
+
+
+**Analyst success criteria:** Because not all covariates are available in the reproduction dataset (which will likely impact the coefficient estimates), the claim will be considered reproducible if it meets the approximate reproduction criteria for the *p*-value and the focal coefficient is of the same sign (i.e., a positive coefficient estimate). 
+
+**Reproduction results**
+
 ```{r gl7j22}
 fit_academic %>% 
   filter(term == "cross_racial_int") %>% 
   select(term, estimate, statistic, p.value)
 ```
 
-**Primary reproduction criteria**
-
-|Criterion          |Original value|Precise reproduction|Approximate reproduction|Non-reproduction|Reproduction result| 
-|--------|--------|--------|--------|--------|--------|
-Coefficient   |$\gamma_{20}$ = 0.16|$\gamma_{20}$ = 0.16|0.14 $\le \gamma_{20} \le$ 0.18|$\gamma_{20}$ < 0.14 or $\gamma_{20}$ > 0.18|$\gamma_{20}$ = 0.02|
-Test statistic|t = 9.74|t = 9.74|8.28 $\le$ t $\le$ 11.20|t < 8.28 or t > 11.20|t = 2.80  |
-p-value       |p < .001|p < .001|.001 $\le$ p $\le$ .051|p > .051            |p = .00518    |
-
-
-**Analyst success criteria:** Because not all covariates are available in the reproduction dataset (which will likely impact the coefficient estimates), the claim will be considered reproducible if it meets the approximate reproduction criteria for the *p*-value and the focal coefficient is of the same sign (i.e., a positive coefficient estimate). 
-
-**Reproduction outcome:** Based on these criteria, the claim did reproduce.
+**Reproduction outcome:** Based on the reproduction criteria, the claim did reproduce.
 
 ## Claim 5
 
-**Coded claim 4 text (original paper):** Additionally, the student body’s
+**Coded claim text (original paper):** Additionally, the student body’s
     average level of curricular diversity engagement ($\gamma_{05}$ = .31, t
     = 3.84) also had a significant positive effect on this measure. So
     students who attended institutions where more students participated
@@ -544,28 +550,30 @@ p-value       |p < .001|p < .001|.001 $\le$ p $\le$ .051|p > .051            |p 
 
 **Description of reproduction data:**  Original Data obtained from the Higher Education Research Institute (HERI). Cooperative Institutional Research Program (CIRP) College Senior Survey Trends downloaded from the CIRP data Data Archives on March 4, 2022.
 
-    
+
+**Primary reproduction criteria**
+
+|Criterion          |Original value|Precise reproduction|Approximate reproduction|Non-reproduction|
+|------|------|------|--------|--------|
+Coefficient   |$\gamma_{05}$ = 0.31|$\gamma_{05}$ = 0.31|0.26 $\le \gamma_{05} \le$ 0.36|$\gamma_{05}$ < 0.26 or $\gamma_{05}$ > 0.36|
+Test statistic|t = 3.84|t = 3.84|3.26 $\le$ t $\le$ 4.42|t < 3.26 or t > 4.42|
+p-value       |p < .001|p < .001|.001 $\le$ p $\le$ .051|p > .051            |
+
+**Analyst success criteria:** Because not all covariates are available in the reproduction dataset (which will likely impact the coefficient estimates), the claim will be considered reproducible if it meets the approximate reproduction criteria for the *p*-value and the focal coefficient is of the same sign (i.e., a positive coefficient estimate). 
+
+**Reproduction results**
+
 ```{r b66y26}
 fit_academic %>% 
   filter(term == "curricular_diversity_mean") %>% 
   select(term, estimate, statistic, p.value)
 ```
 
-**Primary reproduction criteria**
-
-|Criterion          |Original value|Precise reproduction|Approximate reproduction|Non-reproduction|Reproduction result| 
-|--------|--------|--------|--------|--------|--------|
-Coefficient   |$\gamma_{05}$ = 0.31|$\gamma_{05}$ = 0.31|0.26 $\le \gamma_{05} \le$ 0.36|$\gamma_{05}$ < 0.26 or $\gamma_{05}$ > 0.36|$\gamma_{05}$ = .13|
-Test statistic|t = 3.84|t = 3.84|3.26 $\le$ t $\le$ 4.42|t < 3.26 or t > 4.42|t = 2.30       |
-p-value       |p < .001|p < .001|.001 $\le$ p $\le$ .051|p > .051            |p = .0224  |
-
-**Analyst success criteria:** Because not all covariates are available in the reproduction dataset (which will likely impact the coefficient estimates), the claim will be considered reproducible if it meets the approximate reproduction criteria for the *p*-value and the focal coefficient is of the same sign (i.e., a positive coefficient estimate). 
-
-**Reproduction outcome:** Based on these criteria, the claim did reproduce.
+**Reproduction outcome:** Based on the reproduction criteria, the claim did reproduce.
 
 ## Claim 6
 
-**Coded claim 4 text (original paper):** The last set of results reported in
+**Coded claim text (original paper):** The last set of results reported in
     the two columns of numbers on the far right in Table 3 shows
     that curricular diversity ($\gamma_{10}$ = .22, t = 18.57) had
     significant positive effects on the racial-cultural engagement
@@ -579,29 +587,31 @@ p-value       |p < .001|p < .001|.001 $\le$ p $\le$ .051|p > .051            |p 
 
 **Description of reproduction data:**  Original Data obtained from the Higher Education Research Institute (HERI). Cooperative Institutional Research Program (CIRP) College Senior Survey Trends downloaded from the CIRP data Data Archives on March 4, 2022.
 
-    
+
+**Primary reproduction criteria**
+
+|Criterion          |Original value|Precise reproduction|Approximate reproduction|Non-reproduction|
+|------|------|------|--------|--------|
+Coefficient   |$\gamma_{10}$ = 0.22|$\gamma_{10}$ = 0.22|0.19 $\le \gamma_{10} \le$ 0.25|$\gamma_{10}$ < 0.19 or $\gamma_{10}$ > 0.25|
+Test statistic|t = 18.57|t = 18.57|15.78 $\le$ t $\le$ 21.36|t < 15.78 or t > 21.36|
+p-value       |p < .001|p < .001|.001 $\le$ p $\le$ .051|p > .051            |
+
+**Analyst success criteria:**  Because not all covariates are available in the reproduction dataset (which will likely impact the coefficient estimates), the claim will be considered reproducible if it meets the approximate reproduction criteria for the *p*-value and the focal coefficient is of the same sign (i.e., a positive coefficient estimate). 
+
+**Reproduction results**
+
 ```{r m3dy4j}
 fit_engagement %>% 
   filter(term == "curricular_diversity") %>% 
   select(term, estimate, statistic, p.value)
 ```
 
-**Primary reproduction criteria**
-
-|Criterion          |Original value|Precise reproduction|Approximate reproduction|Non-reproduction|Reproduction result| 
-|--------|--------|--------|--------|--------|--------|
-Coefficient   |$\gamma_{10}$ = 0.22|$\gamma_{10}$ = 0.22|0.19 $\le \gamma_{10} \le$ 0.25|$\gamma_{10}$ < 0.19 or $\gamma_{10}$ > 0.25|$\gamma_{10}$ = 0.17|
-Test statistic|t = 18.57|t = 18.57|15.78 $\le$ t $\le$ 21.36|t < 15.78 or t > 21.36|t = 6.60 |
-p-value       |p < .001|p < .001|.001 $\le$ p $\le$ .051|p > .051            |p = 4.23e-11|
-
-**Analyst success criteria:**  Because not all covariates are available in the reproduction dataset (which will likely impact the coefficient estimates), the claim will be considered reproducible if it meets the approximate reproduction criteria for the *p*-value and the focal coefficient is of the same sign (i.e., a positive coefficient estimate). 
-
-**Reproduction outcome:** Based on these criteria, the claim did reproduce.
+**Reproduction outcome:** Based on the reproduction criteria, the claim did reproduce.
 
 
 ## Claim 7
 
-**Coded claim 4 text (original paper):** The last set of results reported in
+**Coded claim text (original paper):** The last set of results reported in
     the two columns of numbers on the far right in Table 3 shows
     that CRI ($\gamma_{20}$ = .35, t = 32.28) had significant positive
     effects on the racial-cultural engagement measure.  
@@ -614,29 +624,33 @@ p-value       |p < .001|p < .001|.001 $\le$ p $\le$ .051|p > .051            |p 
 
 **Description of reproduction data:**  Original Data obtained from the Higher Education Research Institute (HERI). Cooperative Institutional Research Program (CIRP) College Senior Survey Trends downloaded from the CIRP data Data Archives on March 4, 2022.
 
-    
+
+
+**Primary reproduction criteria**
+
+|Criterion          |Original value|Precise reproduction|Approximate reproduction|Non-reproduction|
+|------|------|------|--------|--------|
+Coefficient   |$\gamma_{20}$ = 0.35|$\gamma_{20}$ = 0.35|0.30 $\le \gamma_{20} \le$ 0.40|$\gamma_{20}$ < 0.30 or $\gamma_{20}$ > 0.40|
+Test statistic|t = 32.28|t = 32.28|27.44 $\le$ t $\le$ 37.12|t < 27.44 or t > 37.12|
+p-value       |p < .001|p < .001|.001 $\le$ p $\le$ .051|p > .051            |
+
+
+**Analyst success criteria:** Because not all covariates are available in the reproduction dataset (which will likely impact the coefficient estimates), the claim will be considered reproducible if it meets the approximate reproduction criteria for the *p*-value and the focal coefficient is of the same sign (i.e., a positive coefficient estimate). 
+
+**Reproduction results**
+
 ```{r mw9jx3}
 fit_engagement %>% 
   filter(term == "cross_racial_int") %>% 
   select(term, estimate, statistic, p.value)
 ```
 
-**Primary reproduction criteria**
 
-|Criterion          |Original value|Precise reproduction|Approximate reproduction|Non-reproduction|Reproduction result| 
-|--------|--------|--------|--------|--------|--------|
-Coefficient   |$\gamma_{20}$ = 0.35|$\gamma_{20}$ = 0.35|0.30 $\le \gamma_{20} \le$ 0.40|$\gamma_{20}$ < 0.30 or $\gamma_{20}$ > 0.40|$\gamma_{20}$ = 0.23|
-Test statistic|t = 32.28|t = 32.28|27.44 $\le$ t $\le$ 37.12|t < 27.44 or t > 37.12|t = 30.9  |
-p-value       |p < .001|p < .001|.001 $\le$ p $\le$ .051|p > .051            |p = 5.35e-207|
-
-
-**Analyst success criteria:** Because not all covariates are available in the reproduction dataset (which will likely impact the coefficient estimates), the claim will be considered reproducible if it meets the approximate reproduction criteria for the *p*-value and the focal coefficient is of the same sign (i.e., a positive coefficient estimate). 
-
-**Reproduction outcome:** Based on these criteria, the claim did reproduce.
+**Reproduction outcome:** Based on the reproduction criteria, the claim did reproduce.
 
 :::
 
-# Description of materials provided    
+## Description of materials provided    
 
 All materials on [the OSF project](https://osf.io/pukd8/?view_only=f52f8b0d993a41ab99b345590e041e7c), except for the reproduction data, may be shared publicly. Overview and description of the materials:
 
@@ -660,7 +674,7 @@ Transparency trail of the reproduction attempt. This includes the analysis pipel
 Knitted output of the transparency trail of the reproduction attempt. This includes the analysis pipeline and full results/output of the analysis script (applied to the unblinded data)
 
 
-# References
+## References
 
 Denson & Chang. (2009). Racial Diversity Matters: The Impact of Diversity-Related Student Engagement and Institutional Context. *American Educational Research Journal, 46*(2), 322-353. <https://doi.org/10.3102/0002831208323278>
 
