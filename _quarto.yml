@@ -9,6 +9,7 @@ book:
   chapters:
     - index.qmd
     - score-1.qmd
+    - score-2.qmd
 
 #bibliography: 
 
@@ -17,7 +18,7 @@ format:
     theme: [united, custom.scss]
     link-external-newwindow: true
     link-external-icon: true
-    self-contained: true
+    self-contained: false
     code-copy: true
     code-tools: true
     grid:

@@ -1,0 +1,668 @@
+---
+title: "SCORE Education"
+author: "Shilaan Alzahawi"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(here) #for a project-based workflow
+library(tidyverse) #dplyr, the pipe, ggplot, etc
+library(haven) #to read .zSAV (SPSS) files
+library(lmerTest) #for running linear mixed effects models + p-values
+library(broom.mixed) #for tidying output of lme4
+```
+
+**Reproduction analyst(s):** Shilaan Alzahawi  
+**SCORE RR ID:** 67539  
+**OSF Project:** <https://osf.io/pukd8/?view_only=f52f8b0d993a41ab99b345590e041e7c>
+
+I did not deviate from the provided materials. All claims were successfully reproduced at the first attempt. (Note, however, that because not all covariates are available in the reproduction dataset, my analyst success criteria were relatively broad: for each claim, I evaluate whether (1) the p-value approximately reproduces and (2) the coefficient estimate is of the same sign). To design the analysis, I consulted the following materials: 
+
+- The original paper: Denson & Chang. (2009). Racial Diversity Matters: The Impact of Diversity-Related Student Engagement and Institutional Context. *American Educational Research Journal, 46*(2), 322-353. <https://doi.org/10.3102/0002831208323278>
+- The data retrieved from <https://heri.ucla.edu/data-archive/>
+- The bushel claims obtained [here](https://osf.io/ah4bk/?view_only=0498fe041e4c4753b4126ac28e9960a8)
+ 
+
+## Reconstruction of data
+
+Data were drawn from the Cooperative Institutional Research Program (CIRP) at the UCLA Higher Education Research Institute (HERI), using the Senior Survey (1998). A subsample was created that excluded 2-year colleges and universities, historically Black colleges and universities, and students and institutions with preestablished thresholds of missing cases or items; the authors excluded students who had missing data or marked other on race, and institutions with fewer than 15 respondents.  
+
+Data was obtained from the HERI Data Archives (https://heri.ucla.edu/heri-data-archive/) for academics. This data is part of the public archives for scholarly access. It should not be posted publicly; instead, interested researchers should navigate to https://heri.ucla.edu/data-archive/ to register for the data archive and download the data there.
+
+## Read data
+
+Variables obtained from the 1998 Senior survey:
+
+- Gender (1 = female)
+- Race (five dummy variables: African American, Native American, Asian American, Latino, and White)
+- Control, 0 = public institution, 1 = private institution
+- Part-time job on campus (1 = marked)
+- Level of involvement (1 = marked, standardized). Index of student responses on three items about whether or not they joined a fraternity or sorority; student government; or racial-ethnic organization
+- Curricular diversity (1 = marked, standardized). Index of student responses on three items about whether or not they have participated in the following activities since entering college:
+  - Taken an ethnic studies course
+  - Attended a racial-cultural awareness workshop
+  - Participated in an ethnic-racial student organization
+    - NB: "Participated in an ethnic/racial student organization" is an item for both level of involvement and curricular diversity
+- Cross-racial interaction (standardized). Coded on a 3-point scale from 1 = not at all to 3 = frequently. Responses to "At the college you entered as a freshman, indicate how often you..."
+  - Interacted with someone of a different racial-ethnic group in class
+  - Studied with someone from a different racial-ethnic group
+  - Dined with someone from a different racial-ethnic group
+  - Dated someone from a different racial-ethnic group
+  - Socialized with someone from a different racial-ethnic group 
+    - NB: I cannot find the first item (interacted in class) in the data archives
+- Self-efficacy (standardized). Coded on a 5-point scale from 1 = lowest 10% to 5 = highest 10%. Includes following traits:
+  - Drive to achieve
+  - Self-confidence (intellectual)
+  - Competitiveness 
+  - Academic ability
+  - Writing ability
+    - NB: Appendix A seems to suggest that this outcome measure is standardized by age ("comparing with the average person the student's age"), but I'm not entirely sure
+- General academic skills (standardized). Coded on a 5-point scale from 1 = lowest 10% to 5 = highest 10%. Includes following traits:
+  - Academic ability
+  - Writing ability
+    - Appendix A seems to suggest that this pretest measure is standardized by age ("comparing with the average person the student's age"), but I'm not entirely sure
+    - Table 1 footnote b indicates that this was actually coded from 1 = much weaker to 5 = much stronger (not 1 = lowest 10% to 5 = highest 10%)
+    - These two items are also a part of the self-efficacy measure above
+- Racial-cultural engagement (standardized). Coded on a 4-point scale from 1 = not important to 4 = essential. Student responses to two items about the importance of promoting racial understanding and helping others who are in difficulty.
+- Size: Number of full-time undergraduate students enrolled at the institution
+  - NB: Cannot find this in the data archives. Likely obtained from outside data source.
+- %of underrepresented minority students: %Latino + %Black + %Native American
+  - NB: Likely obtained from outside data source, but can calculate within the survey respondents.
+
+
+```{r read-data, eval=FALSE}
+df <- read_sav(
+  file = here("data/CIRP_Survey.zSAV"), 
+  col_select = c(
+    #Demographics
+    "YEAR",#Year
+    "ACERECODE", #College ID
+    "SUBJID",  #Subject ID
+    "HBCU", #Historically Black College or University
+    "INSTTYPE", #Institutional type
+    "INSTCONT", #Institution Control (1 = public, 2 = private)
+    "SEX", #Biological Sex (1 = male, 2 = female)
+    #Race: 1 = Native, 2 = Asian, 3 = Black, 4 = Hispanic, 5 = White,
+    "RACEGROUP", #Race/Ethnicity Group 6/7 = Other
+    
+    #Curricular diversity: 3 items
+    "COLACT29_9406", #Enrolled in an ethnic studies course [marked]
+    "COLACT02_9406", #Attended racial/cultural awareness workshop [marked]
+    "COLACT17_9406", #Participated in an ethnic/racial student organization
+    
+    #Level of involvement: 3 items
+    "COLACT14_9406", #Joined a social fraternity or sorority
+    "COLACT23_9406", #Participated in student government
+    #"COLACT17_9406" #Participated in an ethnic/racial student organization
+    
+    #Cross-racial interaction: 5 items
+    #NOTE: I cannot find item 1 (interacted in class) in the Survey
+    "ETHACT7", #Studied with someone from a different racial/ethnic group
+    "ETHACT2", #Dined with someone from a different racial/ethnic group
+    "ETHACT1", #Dated someone from a different racial/ethnic background
+    "GENACT30", #Socialized with someone from a different racial-ethnic group 
+    
+    #Racial-cultural engagement: 2 items
+    "GOAL12", #Helping to promote racial understanding
+    "GOAL11", #Helping others who are in difficulty
+    
+    #Self-esteem: 3 items + General academic skills
+    "RATE09", #Drive to achieve
+    "RATE22", #Self-confidence (intellectual)
+    "RATE04", #Competitiveness
+    
+    #General academic skills: 2 items
+    "RATE01", #Self-rated academic ability
+    "RATE28", #Self-rated writing ability
+    
+    #Part-time job on campus
+    "COLACT12_9406"
+    )
+  )
+
+#Recode the variables of interest
+df <- df %>% 
+  filter(
+    YEAR == 1998 & #Only include responses for 1998
+    INSTTYPE != 3 & #Exclude 2yr colleges
+    HBCU != 2 #Exclude Historically Black Colleges or Universities
+  ) %>% 
+  mutate(
+    #public institution = 0, private institution = 1
+    private = ifelse(INSTCONT == 1, 0, ifelse(INSTCONT == 2, 1, NA)),
+    #gender: 1 = female
+    female = ifelse(SEX == 1, 0, ifelse(SEX == 2, 1, NA)),
+    #race
+    black = ifelse(RACEGROUP == 3, 1, 0),
+    native = ifelse(RACEGROUP == 1, 1, 0),
+    asian = ifelse(RACEGROUP == 2, 1, 0),
+    hispanic = ifelse(RACEGROUP == 4, 1, 0),
+    white = ifelse(RACEGROUP == 5, 1, 0),
+    other = ifelse(RACEGROUP %in% 6:7, 1, 0),
+    ethnic_studies = ifelse(COLACT29_9406 == 2, 1, 0),
+    cultural_workshop = ifelse(COLACT02_9406 == 2, 1, 0),
+    ethnic_organization = ifelse(COLACT17_9406 == 2, 1, 0),
+    curricular_diversity = rowMeans(cbind(
+      ethnic_studies, #Enrolled in an ethnic studies course [marked]
+      cultural_workshop, #Attended racial/cultural awareness workshop [marked]
+      ethnic_organization #Participated in an ethnic/racial student organization
+      ), na.rm = TRUE
+    ),
+    fraternity = ifelse(COLACT14_9406 == 2, 1, 0),
+    studentgov = ifelse(COLACT23_9406 == 2, 1, 0),
+    involvement = rowMeans(cbind(
+      fraternity,
+      studentgov,
+      ethnic_organization
+      ), na.rm = TRUE
+    ),
+    cross_racial_int = rowMeans(cbind(
+      ETHACT7, #Studied with someone from a different racial/ethnic group
+      ETHACT2, #Dined with someone from a different racial/ethnic group
+      ETHACT1, #Dated someone from a different racial/ethnic background
+      GENACT30 #Socialized with someone from a different racial-ethnic group
+      ), na.rm = TRUE
+    ),
+    self_efficacy = rowMeans(cbind(
+      RATE09, #Drive to achieve
+      RATE22, #Self-confidence (intellectual)
+      RATE04, #Competitiveness
+      RATE01, #Academic ability
+      RATE28  #Writing ability
+      ), na.rm = TRUE
+    ),
+    academic_skills = rowMeans(cbind(
+      RATE01, #Academic ability
+      RATE28  #Writing ability
+      ), na.rm = TRUE
+    ),
+    racial_engagement = rowMeans(cbind(
+      GOAL11, #Helping others who are in difficulty
+      GOAL12  #Helping to promote racial understanding
+      ), na.rm = TRUE
+    ),
+    part_time_job = ifelse(COLACT12_9406 == 2, 1, 0),
+  ) 
+
+#Create CSV file for seniors in 1998
+write_csv(df, "data/CIRP_Survey.csv")
+```
+
+## Data cleaning and processing 
+
+Standardize the following individual-level variables:
+
+- Self-efficacy
+- Academic skills
+- Racial engagement
+- Involvement
+- Curricular diversity
+- Cross-racial interaction
+
+Calculate the following institution-level variables:
+
+- Average curricular diversity (the average of individual scores by institution)
+- Average cross-racial interaction
+- Proportion of underrepresented minority (URM) students (i.e., the combined proportional representation of African Americans, Hispanic Americans, and Native Americans)
+
+```{r start-here, message = FALSE}
+df <- read_csv(here("data/CIRP_Survey.csv")) %>% 
+  dplyr::select(
+    ACERECODE:SUBJID, 
+    RACEGROUP,
+    private:part_time_job
+    ) %>% 
+  filter(
+    #exclude individuals who marked "Other" on race or did not answer
+    RACEGROUP %in% 1:5 & !is.na(RACEGROUP) 
+  ) %>% 
+  group_by(ACERECODE) %>% #group by college
+  mutate(institution_n = n()) %>% #count the observations per institute
+  ungroup() %>% 
+  filter(institution_n > 14) #exclude institutions with fewer than 14 obs
+
+#Clean up names
+names(df) <- tolower(names(df))
+
+standardize <- function(x) {as.vector(scale(x))}
+
+df <- df %>%
+  mutate(
+    #Standardize all relevant level 1 predictors
+    self_efficacy = standardize(self_efficacy),
+    academic_skills = standardize(academic_skills),
+    racial_engagement = standardize(racial_engagement),
+    involvement = standardize(involvement),
+    curricular_diversity = standardize(curricular_diversity),
+    cross_racial_int = standardize(cross_racial_int),
+    urm = rowSums(cbind(black + native + hispanic), na.rm = TRUE)
+  ) %>%
+  group_by(acerecode) %>%
+  mutate(
+    #Get the level 2 predictors (institution level means)
+    curricular_diversity_mean = mean(curricular_diversity, na.rm = TRUE),
+    cross_racial_int_mean = mean(cross_racial_int, na.rm = TRUE),
+    part_time_job_mean = mean(part_time_job, na.rm = TRUE),
+    female_mean = mean(female, na.rm = TRUE),
+    black_mean = mean(black, na.rm = TRUE),
+    native_mean = mean(native, na.rm = TRUE),
+    hispanic_mean = mean(hispanic, na.rm = TRUE),
+    urm_mean = mean(urm, na.rm = TRUE),
+    involvement_mean = mean(involvement, na.rm = TRUE)
+  )
+```
+
+## Statistical model
+
+Information obtained from paper:
+
+- Three outcomes: self-efficacy, general academic skills, and racial-cultural engagement
+- Level 1 predictors 
+  - Curricular diversity
+  - Cross-racial interaction (CRI)
+  - Part-time job on campus 
+  - Pretest of outcome (drawn from the Freshman Survey 1994)
+  - Highschool GPA
+  - SES (see note below under "Discrepancies")
+  - Live on campus
+  - Native American 
+  - Asian
+  - African American 
+  - Hispanic
+  - Female (0 = male, 1 = female)
+  - Level of involvement
+  
+- Level 2 predictors
+  - % URM Students
+  - Size of college
+  - Selectivity of college
+  - Control: Private
+  - Average curricular diversity
+  - Average cross-racial interaction
+  - Average part-time job on campus 
+  - Pretest of outcome
+  - Average highschool GPA
+  - Average SES (see note below under "Discrepancies")
+  - Average live on campus
+  - Average female
+  - Average level of involvement
+  - Average race
+  
+
+### Discrepancies 
+
+There are two discrepancies between the original paper and my reproduction attempt.  
+
+First, in the final model equations (p.332-333), "SES" is included as a predictor. However, SES is mentioned nowhere in the paper: not in the outcome tables, the descriptive statistics, or in the description of the methods and measures (so I do not know where/how to get or calculate this measure). I'm assuming this is a remnant of a previous version of the paper, and that SES is not actually included in the final model. Thus, I do not include SES in the reproduction attempt.   
+
+Second, the college and student identifiers seem to have been recoded over time (i.e., they are not constant across different yearly iterations of the Survey). As a result, I cannot merge the Survey with outside institution-level data (i.e., undergraduate enrollment and % of URM students), nor merge the 1998 Survey with previous iterations to obtain the covariates measured in earlier years (i.e., pretests of the three outcomes, high school GPA, and on-campus residency).  
+
+In sum, I do not have access to the following covariates mentioned in the paper:  
+
+- Size of college (undergraduate enrollment)
+- Selectivity (Average SAT Verbal and SAT Math scores of entering freshmen) 
+- %of underrepresented minority (URM) students: %Hispanic + %Black + %Native American
+  - While I do not have access to the overall % of URM students for each institution, I can calculate this percentage for the survey respondents and still include this measure
+- Pretest of outcome
+- Highschool GPA
+- Live on campus (yes/no)
+
+Taking these discrepancies into account, I run the following statistical model: 
+
+$$
+\begin{split}
+Y_{ij} = &\gamma_{00} + \gamma_{01}(\text{AVG: URM}) + \gamma_{04} (\text{Control: Private}) + \gamma_{05} (\text{AVG: Curricular diversity}) + \gamma_{06}(\text{AVG: CRI}) + \\
+&\gamma_{07}(\text{AVG: Part-time job on campus}) + \gamma_{012}(\text{AVG: Female}) +  \gamma_{013}(\text{AVG: Involvement}) + \\
+& \gamma_{10}(\text{Curricular diversity}) + \gamma_{11}(\text{Curricular diversity}*\text{AVG: URM}) + \gamma_{12}(\text{Curricular diversity}*\text{AVG: Curricular diversity}) + \\
+&  \gamma_{13}(\text{Curricular diversity}*\text{AVG: CRI}) +  \gamma_{14}(\text{Curricular diversity}*\text{AVG: Part-time job on campus}) + \\
+& \gamma_{20}(\text{CRI}) + \gamma_{21}(\text{CRI}*\text{AVG: URM}) + \gamma_{22}(\text{CRI}*\text{AVG: Curricular diversity}) +  \gamma_{23}(\text{CRI}*\text{AVG: CRI}) + \\
+& \beta_{3j}(\text{Part-time job on campus}) + \beta_{8j}(\text{Native American}) + \beta_{9j}(\text{Asian}) +  \beta_{10j}(\text{African American}) + \beta_{11j}(\text{Hispanic}) + \\
+& \beta_{12j}(\text{Female}) + \beta_{13j}(\text{Involvement})
+\end{split}
+$$
+
+```{r statistical-model, message=FALSE}
+run_lmer <- function(outcome) {
+  lmer(
+  outcome ~
+    #g01*AVG:URM + g04*Private + g05*AVG_curricular_div + g_06*AVG:CRI
+    urm_mean + private + curricular_diversity_mean + cross_racial_int_mean +
+    #g07*AVG:Part_time + g012*AVG:Female + g013*AVG:involvement + 
+    part_time_job_mean + female_mean + involvement_mean + 
+    #g10*curricular_div + g11*curricular_div*AVG:URM + 
+    curricular_diversity + curricular_diversity*urm_mean + 
+    #g12*curricular_div*AVG:curricular_div
+    curricular_diversity*curricular_diversity_mean + 
+    #g13*curricular_div*AVG:CRI
+    curricular_diversity*cross_racial_int_mean +
+    #g14*curricular_div*AVG:Part time
+    curricular_diversity*part_time_job_mean +
+    #g20*CRI   +     g21*CRI*AVG:URM + 
+    cross_racial_int + cross_racial_int*urm_mean + 
+    #g22*CRI*AVG:curricular_div
+    cross_racial_int*curricular_diversity_mean + 
+    #g23*CRI*AVG:CRI         +               b3j*part_time + b8j*native
+    cross_racial_int*cross_racial_int_mean + part_time_job + native +
+    #b9j*asian + b10j*black + b11j*hispanic + b12j*female + b13*involvement
+    asian + black + hispanic + female + involvement +
+    #random intercept for college
+    (1 | acerecode),
+  data = df,
+  verbose = FALSE
+  )
+}
+
+#Run models for the three outcomes
+fit_efficacy <- run_lmer(df$self_efficacy) %>% tidy()
+fit_academic <- run_lmer(df$academic_skills) %>% tidy()
+fit_engagement <- run_lmer(df$racial_engagement) %>% tidy()
+```
+
+### Analyst success criteria
+
+Above, I described two important discrepancies between the original paper and my reproduction attempt: (1) I do not have access to college size; college selectivity; pretests of the outcomes; highschool GPA; and whether students live on campus and (2) I rely on a self-calculated percentage of URM students, based on the survey respondents.  
+
+These covariates likely impact the coefficient estimates, but we can still evaluate if the main predictors (curricular diversity and cross-racial interactions) are significant, with an effect in the same direction. Thus, the analyst success criteria below are relatively broad: for each claim, I evaluate whether (1) the *p*-value approximately reproduces and (2) the coefficient estimate is of the same sign. 
+
+## Claim evaluations
+
+Bushel claims obtained from the OSF [here](https://osf.io/ah4bk/?view_only=0498fe041e4c4753b4126ac28e9960a8). 
+
+::: {.panel-tabset}
+
+## Claim 1
+
+**Coded claim 4 text (original paper):** Table 3 reports the results of the
+    final HLM model for each of the three outcome measures. As shown in
+    the first two columns of numbers in Table 3, the coefficients for
+    the curricular diversity slope base ($\gamma_{10}$ = .08, t = 4.01) are
+    statistically significant, suggesting a significant positive effect
+    on this self-efficacy measure. In other words, students who were
+    more involved in workshops or classes that incorporated issues
+    concerning diversity tended to also report higher levels of
+    self-efficacy.  
+    [Table 3, Self-Efficacy, Curricular diversity slope
+    Base ($\gamma_{10}$): Coefficient (SE) = 0.08 (0.02), t Ratio = 4.01, p
+    &lt; .001]
+
+**Reproduction data source(s)**:  [https://heri.ucla.edu/data-archive/](https://heri.ucla.edu/data-archive/)
+ 
+
+**Description of reproduction data:**  Original Data obtained from the Higher Education Research Institute (HERI). Cooperative Institutional Research Program (CIRP) College Senior Survey Trends downloaded from the CIRP data Data Archives on March 4, 2022.
+
+```{r mknxyd, warning=FALSE}
+fit_efficacy %>% 
+  filter(term == "curricular_diversity") %>% 
+  select(term, estimate, statistic, p.value)
+```
+
+
+**Primary reproduction criteria**
+
+|Criterion          |Original value|Precise reproduction|Approximate reproduction|Non-reproduction|Reproduction result| 
+|--------|--------|--------|--------|--------|--------|
+Coefficient   |$\gamma_{10}$ = 0.08|$\gamma_{10}$ = 0.08|0.07 $\le \gamma_{10} \le$ 0.09|$\gamma_{10}$ < 0.07 or $\gamma_{10}$ > 0.09|$\gamma_{10}$ = 0.11|
+Test statistic|t = 4.01|t = 4.01|3.41 $\le$ t $\le$ 4.61|t < 3.41 or t > 4.61|t = 4.35 |
+p-value       |p < .001|p < .001|.001 $\le$ p $\le$ .051|p > .051            |p = .0000139|
+
+**Analyst success criteria:** Because not all covariates are available in the reproduction dataset (which will likely impact the coefficient estimates), the claim will be considered reproducible if it meets the approximate reproduction criteria for the *p*-value and the focal coefficient is of the same sign (i.e., a positive coefficient estimate). 
+
+**Reproduction outcome:** Based on these criteria, the claim did reproduce.
+
+
+
+## Claim 2
+
+**Coded claim 4 text (original paper):** Table 3 reports the results of the
+    final HLM model for each of the three outcome measures. As shown in
+    the first two columns of numbers in Table 3, the coefficients for
+    the CRI slope base ($\gamma_{20}$ = .14, t = 7.39) are statistically
+    significant, suggesting a significant positive effect on this
+    self-efficacy measure. In other words, students who interacted more
+    with others of another race, tended to also report higher levels of
+    self-efficacy.  
+    [Table 3, Self-Efficacy, CRI slope Base ($\gamma_{20}$):
+    Coefficient (SE) = 0.14 (0.02), t  Ratio = 7.39, p &lt; .001]
+
+**Reproduction data source(s)**:  [https://heri.ucla.edu/data-archive/](https://heri.ucla.edu/data-archive/)
+ 
+
+**Description of reproduction data:**  Original Data obtained from the Higher Education Research Institute (HERI). Cooperative Institutional Research Program (CIRP) College Senior Survey Trends downloaded from the CIRP data Data Archives on March 4, 2022.
+
+    
+```{r m73y84}
+fit_efficacy %>% 
+  filter(term == "cross_racial_int") %>% 
+  select(term, estimate, statistic, p.value)
+```
+
+**Primary reproduction criteria**
+
+|Criterion          |Original value|Precise reproduction|Approximate reproduction|Non-reproduction|Reproduction result| 
+|--------|--------|--------|--------|--------|--------|
+Coefficient   |$\gamma_{20}$ = 0.14|$\gamma_{20}$ = 0.14|0.12 $\le \gamma_{20} \le$ 0.16|$\gamma_{20}$ < 0.12 or $\gamma_{20}$ > 0.16|$\gamma_{20}$ = 0.05|
+Test statistic|t = 7.39|t = 7.39|6.28 $\le$ t $\le$ 8.50|t < 6.28 or t > 8.50|t = 6.20 |
+p-value       |p < .001|p < .001|.001 $\le$ p $\le$ .051|p > .051            |p = 5.86e-10|
+
+
+**Analyst success criteria:** Because not all covariates are available in the reproduction dataset (which will likely impact the coefficient estimates), the claim will be considered reproducible if it meets the approximate reproduction criteria for the *p*-value and the focal coefficient is of the same sign (i.e., a positive coefficient estimate). 
+
+**Reproduction outcome:** Based on these criteria, the claim did reproduce.
+
+## Claim 3
+
+**Coded claim 4 text (original paper):** The second set of results in Table 3
+    shows the findings for the general academic skills measure. Again,
+    focusing on the key variables of interest, the student-level
+    characteristics of curricular diversity ($\gamma_{10}$ = .17, t =
+    10.40) exerted significant positive effects on the general academic
+    skills measure. That is, students who participated in more workshops
+    or diversity-related classes tended to also report higher levels of
+    general academic skills.  
+    [Table 3, General Academic Skills,
+    Curricular diversity slope Base ($\gamma_{10}$): Coefficient (SE) = 0.17
+    (0.02), t Ratio = 10.40, p &lt; .001]
+
+**Reproduction data source(s)**:  [https://heri.ucla.edu/data-archive/](https://heri.ucla.edu/data-archive/)
+ 
+
+**Description of reproduction data:**  Original Data obtained from the Higher Education Research Institute (HERI). Cooperative Institutional Research Program (CIRP) College Senior Survey Trends downloaded from the CIRP data Data Archives on March 4, 2022.
+
+    
+```{r bzyz9k, warning = FALSE}
+fit_academic %>% 
+  filter(term == "curricular_diversity") %>% 
+  select(term, estimate, statistic, p.value)
+```
+
+
+**Primary reproduction criteria**
+
+|Criterion          |Original value|Precise reproduction|Approximate reproduction|Non-reproduction|Reproduction result| 
+|--------|--------|--------|--------|--------|--------|
+Coefficient   |$\gamma_{10}$ = 0.17|$\gamma_{10}$ = 0.17|0.14 $\le \gamma_{10} \le$ 0.20|$\gamma_{10}$ < 0.14 or $\gamma_{10}$ > 0.20|$\gamma_{10}$ = 0.14|
+Test statistic|t = 10.40|t = 10.40|8.84 $\le$ t $\le$ 11.96|t < 8.84 or t > 11.96|t = 5.23|
+p-value       |p < .001|p < .001|.001 $\le$ p $\le$ .051|p > .051            |p = .000000172|
+
+**Analyst success criteria:** Because not all covariates are available in the reproduction dataset (which will likely impact the coefficient estimates), the claim will be considered reproducible if it meets the approximate reproduction criteria for the *p*-value and the focal coefficient is of the same sign (i.e., a positive coefficient estimate). 
+
+**Reproduction outcome:** Based on these criteria, the claim did reproduce.
+
+## Claim 4
+
+**Coded claim 4 text (original paper):** The second set of results in Table 3
+    shows the findings for the general academic skills measure. Again,
+    focusing on the key variables of interest, the student-level
+    characteristics of CRI ($\gamma_{20}$ = .16, t = 9.74) exerted
+    significant positive effects on the general academic skills measure.
+    That is, students who interacted more often with students of another
+    race tended to also report higher levels of general academic skills.  
+    [Table 3, General Academic Skills, CRI slope Base ($\gamma_{20}$):
+    Coefficient (SE) = 0.16 (0.02), t Ratio = 9.74, p &lt; .001]
+
+**Reproduction data source(s)**:  [https://heri.ucla.edu/data-archive/](https://heri.ucla.edu/data-archive/)
+ 
+
+**Description of reproduction data:**  Original Data obtained from the Higher Education Research Institute (HERI). Cooperative Institutional Research Program (CIRP) College Senior Survey Trends downloaded from the CIRP data Data Archives on March 4, 2022.
+
+    
+```{r gl7j22}
+fit_academic %>% 
+  filter(term == "cross_racial_int") %>% 
+  select(term, estimate, statistic, p.value)
+```
+
+**Primary reproduction criteria**
+
+|Criterion          |Original value|Precise reproduction|Approximate reproduction|Non-reproduction|Reproduction result| 
+|--------|--------|--------|--------|--------|--------|
+Coefficient   |$\gamma_{20}$ = 0.16|$\gamma_{20}$ = 0.16|0.14 $\le \gamma_{20} \le$ 0.18|$\gamma_{20}$ < 0.14 or $\gamma_{20}$ > 0.18|$\gamma_{20}$ = 0.02|
+Test statistic|t = 9.74|t = 9.74|8.28 $\le$ t $\le$ 11.20|t < 8.28 or t > 11.20|t = 2.80  |
+p-value       |p < .001|p < .001|.001 $\le$ p $\le$ .051|p > .051            |p = .00518    |
+
+
+**Analyst success criteria:** Because not all covariates are available in the reproduction dataset (which will likely impact the coefficient estimates), the claim will be considered reproducible if it meets the approximate reproduction criteria for the *p*-value and the focal coefficient is of the same sign (i.e., a positive coefficient estimate). 
+
+**Reproduction outcome:** Based on these criteria, the claim did reproduce.
+
+## Claim 5
+
+**Coded claim 4 text (original paper):** Additionally, the student body’s
+    average level of curricular diversity engagement ($\gamma_{05}$ = .31, t
+    = 3.84) also had a significant positive effect on this measure. So
+    students who attended institutions where more students participated
+    in workshops or classes that considered diversity issues tended to
+    also report higher levels of general academic skills, regardless of
+    their own personal involvement.  
+    [Table 3, General Academic Skills,
+    AVG: Curricular diversity ($\gamma_{05}$): Coefficient (SE) = 0.31
+    (0.08), t Ratio = 3.84, p &lt; .001]
+
+**Reproduction data source(s)**:  [https://heri.ucla.edu/data-archive/](https://heri.ucla.edu/data-archive/)
+ 
+
+**Description of reproduction data:**  Original Data obtained from the Higher Education Research Institute (HERI). Cooperative Institutional Research Program (CIRP) College Senior Survey Trends downloaded from the CIRP data Data Archives on March 4, 2022.
+
+    
+```{r b66y26}
+fit_academic %>% 
+  filter(term == "curricular_diversity_mean") %>% 
+  select(term, estimate, statistic, p.value)
+```
+
+**Primary reproduction criteria**
+
+|Criterion          |Original value|Precise reproduction|Approximate reproduction|Non-reproduction|Reproduction result| 
+|--------|--------|--------|--------|--------|--------|
+Coefficient   |$\gamma_{05}$ = 0.31|$\gamma_{05}$ = 0.31|0.26 $\le \gamma_{05} \le$ 0.36|$\gamma_{05}$ < 0.26 or $\gamma_{05}$ > 0.36|$\gamma_{05}$ = .13|
+Test statistic|t = 3.84|t = 3.84|3.26 $\le$ t $\le$ 4.42|t < 3.26 or t > 4.42|t = 2.30       |
+p-value       |p < .001|p < .001|.001 $\le$ p $\le$ .051|p > .051            |p = .0224  |
+
+**Analyst success criteria:** Because not all covariates are available in the reproduction dataset (which will likely impact the coefficient estimates), the claim will be considered reproducible if it meets the approximate reproduction criteria for the *p*-value and the focal coefficient is of the same sign (i.e., a positive coefficient estimate). 
+
+**Reproduction outcome:** Based on these criteria, the claim did reproduce.
+
+## Claim 6
+
+**Coded claim 4 text (original paper):** The last set of results reported in
+    the two columns of numbers on the far right in Table 3 shows
+    that curricular diversity ($\gamma_{10}$ = .22, t = 18.57) had
+    significant positive effects on the racial-cultural engagement
+    measure.  
+    [Table 3, Racial/Cultural Engagement, Curricular diversity
+    slope Base ($\gamma_{10}$): Coefficient (SE) = 0.22 (0.01), t Ratio =
+    18.57, p &lt; .001]
+
+**Reproduction data source(s)**:  [https://heri.ucla.edu/data-archive/](https://heri.ucla.edu/data-archive/)
+ 
+
+**Description of reproduction data:**  Original Data obtained from the Higher Education Research Institute (HERI). Cooperative Institutional Research Program (CIRP) College Senior Survey Trends downloaded from the CIRP data Data Archives on March 4, 2022.
+
+    
+```{r m3dy4j}
+fit_engagement %>% 
+  filter(term == "curricular_diversity") %>% 
+  select(term, estimate, statistic, p.value)
+```
+
+**Primary reproduction criteria**
+
+|Criterion          |Original value|Precise reproduction|Approximate reproduction|Non-reproduction|Reproduction result| 
+|--------|--------|--------|--------|--------|--------|
+Coefficient   |$\gamma_{10}$ = 0.22|$\gamma_{10}$ = 0.22|0.19 $\le \gamma_{10} \le$ 0.25|$\gamma_{10}$ < 0.19 or $\gamma_{10}$ > 0.25|$\gamma_{10}$ = 0.17|
+Test statistic|t = 18.57|t = 18.57|15.78 $\le$ t $\le$ 21.36|t < 15.78 or t > 21.36|t = 6.60 |
+p-value       |p < .001|p < .001|.001 $\le$ p $\le$ .051|p > .051            |p = 4.23e-11|
+
+**Analyst success criteria:**  Because not all covariates are available in the reproduction dataset (which will likely impact the coefficient estimates), the claim will be considered reproducible if it meets the approximate reproduction criteria for the *p*-value and the focal coefficient is of the same sign (i.e., a positive coefficient estimate). 
+
+**Reproduction outcome:** Based on these criteria, the claim did reproduce.
+
+
+## Claim 7
+
+**Coded claim 4 text (original paper):** The last set of results reported in
+    the two columns of numbers on the far right in Table 3 shows
+    that CRI ($\gamma_{20}$ = .35, t = 32.28) had significant positive
+    effects on the racial-cultural engagement measure.  
+    [Table 3,
+    Racial/Cultural Engagement, CRI slope Base ($\gamma_{20}$): Coefficient
+    (SE) = 0.35 (0.01), t Ratio = 32.28, p &lt; .001]
+
+**Reproduction data source(s)**:  [https://heri.ucla.edu/data-archive/](https://heri.ucla.edu/data-archive/)
+ 
+
+**Description of reproduction data:**  Original Data obtained from the Higher Education Research Institute (HERI). Cooperative Institutional Research Program (CIRP) College Senior Survey Trends downloaded from the CIRP data Data Archives on March 4, 2022.
+
+    
+```{r mw9jx3}
+fit_engagement %>% 
+  filter(term == "cross_racial_int") %>% 
+  select(term, estimate, statistic, p.value)
+```
+
+**Primary reproduction criteria**
+
+|Criterion          |Original value|Precise reproduction|Approximate reproduction|Non-reproduction|Reproduction result| 
+|--------|--------|--------|--------|--------|--------|
+Coefficient   |$\gamma_{20}$ = 0.35|$\gamma_{20}$ = 0.35|0.30 $\le \gamma_{20} \le$ 0.40|$\gamma_{20}$ < 0.30 or $\gamma_{20}$ > 0.40|$\gamma_{20}$ = 0.23|
+Test statistic|t = 32.28|t = 32.28|27.44 $\le$ t $\le$ 37.12|t < 27.44 or t > 37.12|t = 30.9  |
+p-value       |p < .001|p < .001|.001 $\le$ p $\le$ .051|p > .051            |p = 5.35e-207|
+
+
+**Analyst success criteria:** Because not all covariates are available in the reproduction dataset (which will likely impact the coefficient estimates), the claim will be considered reproducible if it meets the approximate reproduction criteria for the *p*-value and the focal coefficient is of the same sign (i.e., a positive coefficient estimate). 
+
+**Reproduction outcome:** Based on these criteria, the claim did reproduce.
+
+:::
+
+# Description of materials provided    
+
+All materials on [the OSF project](https://osf.io/pukd8/?view_only=f52f8b0d993a41ab99b345590e041e7c), except for the reproduction data, may be shared publicly. Overview and description of the materials:
+
+- `Denson_AmEduResJourn_2009_zb3Y_bushel_claims.md`  
+An overview of all claims extracted from the paper
+- `Denson_AmEduResJourn_2009_zb3Y_67539_SDR_PREREGISTRATION.xlsx`   
+Excel workbook with the preregistered reproduction criteria for all claims part of the reproduction attempt
+- `Codebook.pdf`  
+Codebook (data dictionary) accompanying `CIRP_Survey.zSAV`
+- `CIRP_Survey.zSAV`   
+Reproduction data, obtained from the Higher Education Research Institute. Data was obtained from the HERI Data Archives (https://heri.ucla.edu/heri-data-archive/) for academics. This data is part of the public archives for scholarly access. It should not be posted publicly; instead, interested researchers should navigate to https://heri.ucla.edu/data-archive/ to register for the data archive and download the data there. 
+- `CIRP_Survey.csv`  
+Processed and cleaned data, on which all analyses were run
+- `Analysis-script-preregistration.Rmd`  
+Preregistered analysis script (on randomly shuffled, blinded data)
+- `Analysis-script-preregistration.html`   
+Knitted output of the preregistered analysis script (on randomly shuffled, blinded data)
+- `Transparency Trail.Rmd`   
+Transparency trail of the reproduction attempt. This includes the analysis pipeline and full results/output of the analysis script (applied to the unblinded data)
+- `Transparency-Trail.html`   
+Knitted output of the transparency trail of the reproduction attempt. This includes the analysis pipeline and full results/output of the analysis script (applied to the unblinded data)
+
+
+# References
+
+Denson & Chang. (2009). Racial Diversity Matters: The Impact of Diversity-Related Student Engagement and Institutional Context. *American Educational Research Journal, 46*(2), 322-353. <https://doi.org/10.3102/0002831208323278>
+
+UCLA Higher Education Research Institute (HERI). Cooperative Institutional Research Program (CIRP) College Senior Survey Trends. Retrieved from [https://heri.ucla.edu/data-archive/](https://heri.ucla.edu/data-archive/).
+
