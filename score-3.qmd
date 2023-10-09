@@ -490,7 +490,7 @@ df <- bind_rows(
 **Primary reproduction criteria**
 
 |Criterion          |Original value|Precise reproduction|Approximate reproduction|Non-reproduction|
-|------|------|------|--------|--------|
+|------|--------|------|------|--------|
 Test statistic|t = 5.42|t = 5.42|4.61 $\le$ t $\le$ 6.23|t < 4.61 or t > 6.23|
 p-value       |p < .001|p < .001|.001 $\le$ p $\le$ .051|p > .051            |
 
@@ -516,7 +516,7 @@ tidy(lm(z ~ x, data = df_group1))[1, ]#we are interested in the intercept
 
 **Coded claim text (original paper):**  The two remaining data sets in
     Figure 1 refer to the effect sizes included in Vohs’s (2015) Tables
-    1 and 2…Regression tests confirmed that the remaining effect sizes
+    1 and 2. Regression tests confirmed that the remaining effect sizes
     were also related to their standard errors for the studies included
     in Table 2 (diamonds, which are purple in the online article), t(21)
     = 1.89, p = .072.
@@ -530,7 +530,7 @@ tidy(lm(z ~ x, data = df_group1))[1, ]#we are interested in the intercept
 **Primary reproduction criteria**
 
 |Criterion          |Original value|Precise reproduction|Approximate reproduction|Non-reproduction|
-|------|------|------|--------|--------|
+|------|--------|------|------|--------|
 Test statistic|t = 1.89|t = 1.89|1.61 $\le$ t $\le$ 2.17|t < 1.61 or t > 2.17|
 p-value       |p = .072|p = .072|.022 $\le$ p $\le$ .122|p < .022 or p > .122|
 
@@ -574,8 +574,8 @@ tidy(lm(z ~ x, data = df_group2))[1, ]#we are again interested in the intercept
 **Primary reproduction criteria**
 
 |Criterion          |Original value|Precise reproduction|Approximate reproduction|Non-reproduction|
-|------|------|------|--------|--------|
-Sample size         |n = 99 included effect sizes (14 + 42 + 20 + 23)|n = 99|84 $\le$ n $\le$ 114|n < 84 or n > 114|
+|------|--------|------|------|--------|
+Sample size         |n = 99 effect sizes|n = 99|84 $\le$ n $\le$ 114|n < 84 or n > 114|
 
 NB: The sample size and focal coefficient are considered "approximately reproduced" when the reproduction result is within 15% of the original result. For *p*-values, the result is considered "approximately reproduced" when it is within 0.05 points of the original. 
 
@@ -655,8 +655,8 @@ nrow(df %>% filter(group != "Excluded"))
 
 ## Claim 4
 
-**Coded claim text (original paper):**  in Figure 2, which represents the
-    density function of z scores within these data sets…As can be seen,
+**Coded claim text (original paper):**  Figure 2 represents the
+    density function of z scores within these data sets. As can be seen,
     the modal z scores are just large enough to be statistically
     significant in a two-tailed test. This is also the case for the
     experiments reported by Vohs et al. (2006) and Caruso et al. (2013).
@@ -672,8 +672,8 @@ nrow(df %>% filter(group != "Excluded"))
 **Primary reproduction criteria**
 
 |Criterion          |Original value|Precise reproduction|Approximate reproduction|Non-reproduction|
-|------|------|------|--------|--------|
-Sample size         |n = 116 included effect sizes (14 + 42 + 20 + 23 + 17)|n = 116|99 $\le$ n $\le$ 133|n < 99 or n > 133|
+|------|--------|------|------|--------|
+Sample size         |n = 116 effect sizes|n = 116|99 $\le$ n $\le$ 133|n < 99 or n > 133|
 
 NB: The sample size and focal coefficient are considered "approximately reproduced" when the reproduction result is within 15% of the original result. For *p*-values, the result is considered "approximately reproduced" when it is within 0.05 points of the original. 
 
@@ -743,8 +743,8 @@ nrow(df)
  **Primary reproduction criteria**
 
 |Criterion          |Original value|Precise reproduction|Approximate reproduction|Non-reproduction|
-|------|------|------|--------|--------|
-Sample size         |n = 99 included effect sizes (14 + 42 + 20 + 23)|n = 99|84 $\le$ n $\le$ 114|n < 84 or n > 114|
+|------|--------|------|------|--------|
+Sample size         |n = 99 effect sizes|n = 99|84 $\le$ n $\le$ 114|n < 84 or n > 114|
 
 NB: The sample size and focal coefficient are considered "approximately reproduced" when the reproduction result is within 15% of the original result. For *p*-values, the result is considered "approximately reproduced" when it is within 0.05 points of the original. 
 
@@ -807,10 +807,10 @@ legend(0.2, 1.66, legend = c(
  **Reproduction criteria**
 
 |Criterion          |Original value|Precise reproduction|Approximate reproduction|Non-reproduction|
-|------|------|------|--------|--------|
-Focal p-value       |p = .017|p = .017|p $\le$ .067|p > .067|
-Proportion of significant results|	proportion = .86|	proportion = .86|	.73 $\le$ proportion $\le$  .99|	proportion < .73 or proportion > .99|
-Mean power to detect FE estimate|	mean power = .55|	mean power = .55|	.47 $\le$ mean power $\le$ .63|	mean power < .47 or mean power > .63|
+|------|------|------|-------|---------|
+p-value       |p = .017|p = .017|p $\le$ .067|p > .067|
+Proportion of significant results|	Prop = .86|	Prop = .86|	.73 $\le$ Prop $\le$  .99|	Prop < .73 or Prop > .99|
+Mean power to detect FE estimate|	Mean = .55| Mean = .55|	.47 $\le$  Mean $\le$ .63| Mean < .47 or Mean > .63|
 
 NB: The sample size and focal coefficient are considered "approximately reproduced" when the reproduction result is within 15% of the original result. For *p*-values, the result is considered "approximately reproduced" when it is within 0.05 points of the original. 
 
@@ -860,10 +860,10 @@ An overview of all claims extracted from the paper
 - `Vadillo_JournExPsychGen_2016_BrGp_24783_SDR_Pregistration.xlsx`   
 Excel workbook with the preregistered reproduction criteria for all claims part of the reproduction attempt
 - Original papers from which data were obtained. All papers (except Vohs, 2015) are openly available online and added to the repository:
-  - `Caruso 2013 Mere exposure to money increases endorsement of free-market systems and social inequality.pdf` openly available at [https://carlsonschool.umn.edu/sites/carlsonschool.umn.edu/files/2019-04/caruso_vohs_et_al_2013_jepg_0.pdf](https://carlsonschool.umn.edu/sites/carlsonschool.umn.edu/files/2019-04/caruso_vohs_et_al_2013_jepg_0.pdf) 
+  - `Caruso 2013.pdf` openly available at [https://carlsonschool.umn.edu/sites/carlsonschool.umn.edu/files/2019-04/caruso_vohs_et_al_2013_jepg_0.pdf](https://carlsonschool.umn.edu/sites/carlsonschool.umn.edu/files/2019-04/caruso_vohs_et_al_2013_jepg_0.pdf) 
   - `Klein et al (2014).pdf` openly available at [https://econtent.hogrefe.com/doi/10.1027/1864-9335/a000178](https://econtent.hogrefe.com/doi/10.1027/1864-9335/a000178)
-  - `Rohrer 2015 Do subtle reminders of money change people’s political views?.pdf` openly available at [http://uweb.cas.usf.edu/~drohrer/pdfs/Rohrer_et_al_2015JEPG.pdf](http://uweb.cas.usf.edu/~drohrer/pdfs/Rohrer_et_al_2015JEPG.pdf)
-  - `Vohs 2006 The Psychological Consequences of Money.pdf` openly available at [https://web.missouri.edu/~segerti/capstone/VohsMoney.pdf](https://web.missouri.edu/~segerti/capstone/VohsMoney.pdf)
+  - `Rohrer 2015.pdf` openly available at [http://uweb.cas.usf.edu/~drohrer/pdfs/Rohrer_et_al_2015JEPG.pdf](http://uweb.cas.usf.edu/~drohrer/pdfs/Rohrer_et_al_2015JEPG.pdf)
+  - `Vohs 2006.pdf` openly available at [https://web.missouri.edu/~segerti/capstone/VohsMoney.pdf](https://web.missouri.edu/~segerti/capstone/VohsMoney.pdf)
 - `Klein_2014.xlsx`
   - Data for Klein et al. 2014, obtained from [https://osf.io/rn4ue/](https://osf.io/rn4ue/)
 - `Vadillo_2016.csv`  
@@ -879,16 +879,16 @@ Knitted output of the transparency trail of the reproduction attempt. This inclu
 
 ## References
 
-Caruso, Vohs, Baxter, & Waytz. (2013). Mere Exposure to Money Increases Endorsement of Free-Market Systems and Social Inequality. *Journal of Experimental Psychology: General, 142*(2), 301-306.
+Caruso, Vohs, Baxter, & Waytz. (2013). Mere Exposure to Money Increases Endorsement of Free-Market Systems and Social Inequality. *Journal of Experimental Psychology: General, 142*(2), 301-306. <https://doi.org/10.1037/a0029288>
 
-Klein et al. (2014). Investigating Variation in Replicability: A "Many Labs" Replication Projects. *Social Psychology, 45*(3), 142-152.
+Klein et al. (2014). Investigating Variation in Replicability: A "Many Labs" Replication Projects. *Social Psychology, 45*(3), 142-152. <https://doi.org/10.1027/1864-9335/a000178>
 
-Rohrer, D., Pashler, H., & Harris, C.R. (2015). Do Subtle Reminders of Money Change People's Political Views? *Journal of Experimental Psychology: General, 144*(4), e73-e85.
+Rohrer, D., Pashler, H., & Harris, C.R. (2015). Do Subtle Reminders of Money Change People's Political Views? *Journal of Experimental Psychology: General, 144*(4), e73-e85. <http://dx.doi.org/10.1037/xge0000058>
 
-Thalheimer, W., & Cook, S. (2002, August). How to calculate effect sizes from published research articles: A simplified methodology. Retrieved March 4, 2022 from https://www.bwgriffin.com/gsu/courses/edur9131/content/Effect_Sizes_pdf5.pdf
+Thalheimer, W., & Cook, S. (2002, August). How to calculate effect sizes from published research articles: A simplified methodology. Retrieved March 4, 2022 from <https://www.bwgriffin.com/gsu/courses/edur9131/content/Effect_Sizes_pdf5.pdf>
 
-Vadillo, Hardwicke, & Shanks. (2016). Selection Bias, Vote Counting, and Money-Priming Effects: A Comment on Rohrer, Pashler, and Harris (2015) and Vohs (2015). *Journal of Experimental Psychology: General, 145*(5), 655-663.
+Vadillo, Hardwicke, & Shanks. (2016). Selection Bias, Vote Counting, and Money-Priming Effects: A Comment on Rohrer, Pashler, and Harris (2015) and Vohs (2015). *Journal of Experimental Psychology: General, 145*(5), 655-663. <https://doi.org/10.1037/xge0000157>
 
-Vohs, Mead, & Goode. (2006). The Psychological Consequences of Money. *Science, 314*(5802), 1154-1156. 
+Vohs, Mead, & Goode. (2006). The Psychological Consequences of Money. *Science, 314*(5802), 1154-1156. <https://psycnet.apa.org/doi/10.1126/science.1132491>
 
-Vohs. (2015). Money Priming Can Change People's Thoughts, Feelings, Motivations, and Behaviors: An Update on 10 Years of Experiments. *Journal of Experimental Psychology: General, 144*(4), e86-e93. 
+Vohs. (2015). Money Priming Can Change People's Thoughts, Feelings, Motivations, and Behaviors: An Update on 10 Years of Experiments. *Journal of Experimental Psychology: General, 144*(4), e86-e93. <http://dx.doi.org/10.1037/xge0000091>
