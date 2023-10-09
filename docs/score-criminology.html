@@ -7,9 +7,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Shilaan Alzahawi">
-<meta name="dcterms.date" content="2023-10-03">
+<meta name="dcterms.date" content="2023-10-09">
 
-<title>Reproducible Workflows - 1&nbsp; SCORE Criminology</title>
+<title>Reproducible Workflows - 3&nbsp; SCORE Criminology</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -66,8 +66,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./score-2.html" rel="next">
-<link href="./index.html" rel="prev">
+<link href="./score-education.html" rel="next">
+<link href="./score-meta.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
@@ -112,7 +112,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./score-1.html"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">SCORE Criminology</span></a></li></ol></nav>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./score-criminology.html"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">SCORE Criminology</span></a></li></ol></nav>
       <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
       </a>
       <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
@@ -145,20 +145,26 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./score-1.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">SCORE Criminology</span></span></a>
+  <a href="./score-political.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">SCORE Political Science</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./score-2.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">SCORE Education</span></span></a>
+  <a href="./score-meta.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">SCORE Meta-Analysis</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./score-3.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">SCORE Meta-Analysis</span></span></a>
+  <a href="./score-criminology.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">SCORE Criminology</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./score-education.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">SCORE Education</span></span></a>
   </div>
 </li>
     </ul>
@@ -171,20 +177,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#read-data" id="toc-read-data" class="nav-link active" data-scroll-target="#read-data"><span class="header-section-number">1.1</span> Read data</a></li>
-  <li><a href="#data-cleaning-and-processing" id="toc-data-cleaning-and-processing" class="nav-link" data-scroll-target="#data-cleaning-and-processing"><span class="header-section-number">1.2</span> Data cleaning and processing</a>
+  <li><a href="#read-data" id="toc-read-data" class="nav-link active" data-scroll-target="#read-data"><span class="header-section-number">3.1</span> Read data</a></li>
+  <li><a href="#data-cleaning-and-processing" id="toc-data-cleaning-and-processing" class="nav-link" data-scroll-target="#data-cleaning-and-processing"><span class="header-section-number">3.2</span> Data cleaning and processing</a>
   <ul class="collapse">
-  <li><a href="#incarceration-data" id="toc-incarceration-data" class="nav-link" data-scroll-target="#incarceration-data"><span class="header-section-number">1.2.1</span> Incarceration data</a></li>
-  <li><a href="#age" id="toc-age" class="nav-link" data-scroll-target="#age"><span class="header-section-number">1.2.2</span> Age</a></li>
-  <li><a href="#create-initial-dataset" id="toc-create-initial-dataset" class="nav-link" data-scroll-target="#create-initial-dataset"><span class="header-section-number">1.2.3</span> Create initial dataset</a></li>
-  <li><a href="#arrest-status" id="toc-arrest-status" class="nav-link" data-scroll-target="#arrest-status"><span class="header-section-number">1.2.4</span> Arrest status</a></li>
-  <li><a href="#relationship-status" id="toc-relationship-status" class="nav-link" data-scroll-target="#relationship-status"><span class="header-section-number">1.2.5</span> Relationship status</a></li>
+  <li><a href="#incarceration-data" id="toc-incarceration-data" class="nav-link" data-scroll-target="#incarceration-data"><span class="header-section-number">3.2.1</span> Incarceration data</a></li>
+  <li><a href="#age" id="toc-age" class="nav-link" data-scroll-target="#age"><span class="header-section-number">3.2.2</span> Age</a></li>
+  <li><a href="#create-initial-dataset" id="toc-create-initial-dataset" class="nav-link" data-scroll-target="#create-initial-dataset"><span class="header-section-number">3.2.3</span> Create initial dataset</a></li>
+  <li><a href="#arrest-status" id="toc-arrest-status" class="nav-link" data-scroll-target="#arrest-status"><span class="header-section-number">3.2.4</span> Arrest status</a></li>
+  <li><a href="#relationship-status" id="toc-relationship-status" class="nav-link" data-scroll-target="#relationship-status"><span class="header-section-number">3.2.5</span> Relationship status</a></li>
   </ul></li>
-  <li><a href="#create-final-merged-dataset" id="toc-create-final-merged-dataset" class="nav-link" data-scroll-target="#create-final-merged-dataset"><span class="header-section-number">1.3</span> Create final, merged dataset</a></li>
-  <li><a href="#statistical-model" id="toc-statistical-model" class="nav-link" data-scroll-target="#statistical-model"><span class="header-section-number">1.4</span> Statistical model</a></li>
-  <li><a href="#claim-evaluations" id="toc-claim-evaluations" class="nav-link" data-scroll-target="#claim-evaluations"><span class="header-section-number">1.5</span> Claim evaluations</a></li>
-  <li><a href="#description-of-materials-provided" id="toc-description-of-materials-provided" class="nav-link" data-scroll-target="#description-of-materials-provided"><span class="header-section-number">1.6</span> Description of materials provided</a></li>
-  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references"><span class="header-section-number">1.7</span> References</a></li>
+  <li><a href="#create-final-merged-dataset" id="toc-create-final-merged-dataset" class="nav-link" data-scroll-target="#create-final-merged-dataset"><span class="header-section-number">3.3</span> Create final, merged dataset</a></li>
+  <li><a href="#statistical-model" id="toc-statistical-model" class="nav-link" data-scroll-target="#statistical-model"><span class="header-section-number">3.4</span> Statistical model</a></li>
+  <li><a href="#claim-evaluations" id="toc-claim-evaluations" class="nav-link" data-scroll-target="#claim-evaluations"><span class="header-section-number">3.5</span> Claim evaluations</a></li>
+  <li><a href="#description-of-materials-provided" id="toc-description-of-materials-provided" class="nav-link" data-scroll-target="#description-of-materials-provided"><span class="header-section-number">3.6</span> Description of materials provided</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references"><span class="header-section-number">3.7</span> References</a></li>
   </ul>
 </nav>
     </div>
@@ -193,7 +199,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<div class="quarto-title-block"><div><h1 class="title"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">SCORE Criminology</span></h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
+<div class="quarto-title-block"><div><h1 class="title"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">SCORE Criminology</span></h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
 </div>
 
 
@@ -210,7 +216,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">October 3, 2023</p>
+      <p class="date">October 9, 2023</p>
     </div>
   </div>
   
@@ -229,8 +235,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>The data posted at <a href="https://www.nlsinfo.org/investigator/pages/search#">https://www.nlsinfo.org/investigator/pages/search#</a></li>
 <li>The bushel claims obtained <a href="https://osf.io/5xqeh/?view_only=0498fe041e4c4753b4126ac28e9960a8">here</a></li>
 </ul>
-<section id="read-data" class="level2" data-number="1.1">
-<h2 data-number="1.1" class="anchored" data-anchor-id="read-data"><span class="header-section-number">1.1</span> Read data</h2>
+<section id="read-data" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="read-data"><span class="header-section-number">3.1</span> Read data</h2>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Data obtained from the NLS here https://www.bls.gov/nls/nlsy97.htm </span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>NLSY97 <span class="ot">&lt;-</span> <span class="fu">read.table</span>(<span class="fu">here</span>(<span class="st">"data/NLSY97.dat"</span>), <span class="at">sep =</span> <span class="st">" "</span>)</span>
@@ -242,10 +248,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>NLSY97 <span class="ot">&lt;-</span> <span class="fu">qnames</span>(NLSY97)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
-<section id="data-cleaning-and-processing" class="level2" data-number="1.2">
-<h2 data-number="1.2" class="anchored" data-anchor-id="data-cleaning-and-processing"><span class="header-section-number">1.2</span> Data cleaning and processing</h2>
-<section id="incarceration-data" class="level3" data-number="1.2.1">
-<h3 data-number="1.2.1" class="anchored" data-anchor-id="incarceration-data"><span class="header-section-number">1.2.1</span> Incarceration data</h3>
+<section id="data-cleaning-and-processing" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="data-cleaning-and-processing"><span class="header-section-number">3.2</span> Data cleaning and processing</h2>
+<section id="incarceration-data" class="level3" data-number="3.2.1">
+<h3 data-number="3.2.1" class="anchored" data-anchor-id="incarceration-data"><span class="header-section-number">3.2.1</span> Incarceration data</h3>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Get incarceration data</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>incarceration <span class="ot">&lt;-</span> NLSY97 <span class="sc">%&gt;%</span> </span>
@@ -255,8 +261,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>months_incarcerated <span class="ot">&lt;-</span> <span class="fu">rowSums</span>(incarceration, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
-<section id="age" class="level3" data-number="1.2.2">
-<h3 data-number="1.2.2" class="anchored" data-anchor-id="age"><span class="header-section-number">1.2.2</span> Age</h3>
+<section id="age" class="level3" data-number="3.2.2">
+<h3 data-number="3.2.2" class="anchored" data-anchor-id="age"><span class="header-section-number">3.2.2</span> Age</h3>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Age at start of survey</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>age <span class="ot">&lt;-</span> NLSY97<span class="sc">$</span><span class="st">`</span><span class="at">CV_AGE_12/31/96_1997</span><span class="st">`</span></span>
@@ -274,8 +280,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
-<section id="create-initial-dataset" class="level3" data-number="1.2.3">
-<h3 data-number="1.2.3" class="anchored" data-anchor-id="create-initial-dataset"><span class="header-section-number">1.2.3</span> Create initial dataset</h3>
+<section id="create-initial-dataset" class="level3" data-number="3.2.3">
+<h3 data-number="3.2.3" class="anchored" data-anchor-id="create-initial-dataset"><span class="header-section-number">3.2.3</span> Create initial dataset</h3>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Create clean dataframe with relevant variables</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
@@ -331,8 +337,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb4-52"><a href="#cb4-52" aria-hidden="true" tabindex="-1"></a>    )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
-<section id="arrest-status" class="level3" data-number="1.2.4">
-<h3 data-number="1.2.4" class="anchored" data-anchor-id="arrest-status"><span class="header-section-number">1.2.4</span> Arrest status</h3>
+<section id="arrest-status" class="level3" data-number="3.2.4">
+<h3 data-number="3.2.4" class="anchored" data-anchor-id="arrest-status"><span class="header-section-number">3.2.4</span> Arrest status</h3>
 <p>Arrest status is collected every month, with the following answer options:</p>
 <ul>
 <li>0: R not arrested in this month and not arrested in a previous month</li>
@@ -376,8 +382,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a><span class="co">#nrow(arrest) == number_of_respondents * number_of_timepoints #TRUE</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
-<section id="relationship-status" class="level3" data-number="1.2.5">
-<h3 data-number="1.2.5" class="anchored" data-anchor-id="relationship-status"><span class="header-section-number">1.2.5</span> Relationship status</h3>
+<section id="relationship-status" class="level3" data-number="3.2.5">
+<h3 data-number="3.2.5" class="anchored" data-anchor-id="relationship-status"><span class="header-section-number">3.2.5</span> Relationship status</h3>
 <p>Relationship status is collected every month, with the following answer options:</p>
 <ul>
 <li>0 Never Married, Not Cohabitating</li>
@@ -443,8 +449,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </section>
 </section>
-<section id="create-final-merged-dataset" class="level2" data-number="1.3">
-<h2 data-number="1.3" class="anchored" data-anchor-id="create-final-merged-dataset"><span class="header-section-number">1.3</span> Create final, merged dataset</h2>
+<section id="create-final-merged-dataset" class="level2" data-number="3.3">
+<h2 data-number="3.3" class="anchored" data-anchor-id="create-final-merged-dataset"><span class="header-section-number">3.3</span> Create final, merged dataset</h2>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co">#keep only the marriage data for respondents who were ever arrested</span></span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>marital <span class="ot">&lt;-</span> marital <span class="sc">%&gt;%</span> </span>
@@ -479,8 +485,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a><span class="co">#nlevels(df_long$id) #n=882</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
-<section id="statistical-model" class="level2" data-number="1.4">
-<h2 data-number="1.4" class="anchored" data-anchor-id="statistical-model"><span class="header-section-number">1.4</span> Statistical model</h2>
+<section id="statistical-model" class="level2" data-number="3.4">
+<h2 data-number="3.4" class="anchored" data-anchor-id="statistical-model"><span class="header-section-number">3.4</span> Statistical model</h2>
 <p>Information obtained from paper:</p>
 <ul>
 <li>Generalized Mixed Model (binomial family with logit link)</li>
@@ -516,8 +522,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <div style="page-break-after: always;"></div>
 </section>
-<section id="claim-evaluations" class="level2" data-number="1.5">
-<h2 data-number="1.5" class="anchored" data-anchor-id="claim-evaluations"><span class="header-section-number">1.5</span> Claim evaluations</h2>
+<section id="claim-evaluations" class="level2" data-number="3.5">
+<h2 data-number="3.5" class="anchored" data-anchor-id="claim-evaluations"><span class="header-section-number">3.5</span> Claim evaluations</h2>
 <p>Bushel claims obtained from the OSF <a href="https://osf.io/5xqeh/?view_only=0498fe041e4c4753b4126ac28e9960a8">here</a>.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true">Claim 1</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false">Claim 2: Model 1</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-3" role="tab" aria-controls="tabset-1-3" aria-selected="false">Claim 2: Model 2</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-4" role="tab" aria-controls="tabset-1-4" aria-selected="false">Claim 2: Model 3</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-5-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-5" role="tab" aria-controls="tabset-1-5" aria-selected="false">Claim 2: Model 4</a></li></ul>
@@ -574,7 +580,7 @@ Original data obtained from the US Bureau of Labor Statistics. NLSY97 (National 
 <p>NB: The sample size and focal coefficient are considered “approximately reproduced” when the reproduction result is within 15% of the original result. For <em>p</em>-values, the result is considered “approximately reproduced” when it is within 0.05 points of the original.</p>
 <p><strong>Analyst success criteria:</strong> The claim will be considered reproducible if a generalized mixed model predicting the log odds of arrest meets the approximate reproduction criteria for the sample size, p-value, and the focal coefficient of divorce.</p>
 <p><strong>Reproduction results</strong></p>
-<div class="cell" data-hash="score-1_cache/html/g82z5k_48cb67276994cc6a83469e3b9714f2c9">
+<div class="cell" data-hash="score-criminology_cache/html/g82z5k_96c909ccf60f44c92f6c5049b1524001">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>claim1 <span class="ot">&lt;-</span> <span class="fu">run_model</span>() <span class="co">#run model on entire sample</span></span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="co">#check fixed effect of divorce</span></span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(claim1)<span class="sc">$</span>tTable[<span class="st">"divorced"</span>, <span class="fu">c</span>(<span class="st">"Value"</span>, <span class="st">"p-value"</span>)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -635,7 +641,7 @@ Original data obtained from the US Bureau of Labor Statistics. NLSY97 (National 
 <p>NB: The sample size and focal coefficient are considered “approximately reproduced” when the reproduction result is within 15% of the original result. For <em>p</em>-values, the result is considered “approximately reproduced” when it is within 0.05 points of the original.</p>
 <p><strong>Analyst success criteria:</strong> The claim will be considered reproducible if a generalized mixed model predicting the log odds of arrest meets the approximate reproduction criteria for the sample size and the precise reproduction criteria for the p-value (p &gt; .05).</p>
 <p><strong>Reproduction results</strong></p>
-<div class="cell" data-hash="score-1_cache/html/model1_08627a2ca96bd03cd88d1371487045f8">
+<div class="cell" data-hash="score-criminology_cache/html/model1_f2390a289da5c44aa2fa088da45aaffd">
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Model 1</span></span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>model1 <span class="ot">&lt;-</span> <span class="fu">run_model</span>(<span class="at">months =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">11</span>) </span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model1)<span class="sc">$</span>tTable[<span class="st">"divorced"</span>, <span class="st">"p-value"</span>] <span class="co">#check p-value model 1</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -695,7 +701,7 @@ Original data obtained from the US Bureau of Labor Statistics. NLSY97 (National 
 <p>NB: The sample size and focal coefficient are considered “approximately reproduced” when the reproduction result is within 15% of the original result. For <em>p</em>-values, the result is considered “approximately reproduced” when it is within 0.05 points of the original.</p>
 <p><strong>Analyst success criteria:</strong> The claim will be considered reproducible if a generalized mixed model predicting the log odds of arrest meets the approximate reproduction criteria for the sample size and the precise reproduction criteria for the p-value (p &gt; .05).</p>
 <p><strong>Reproduction results</strong></p>
-<div class="cell" data-hash="score-1_cache/html/model2_4bce6384b7e7cd16073f7e5e9fa9b241">
+<div class="cell" data-hash="score-criminology_cache/html/model2_0a2559ca2f71472e78c5b21e6163275b">
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Model 2</span></span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>model2 <span class="ot">&lt;-</span> <span class="fu">run_model</span>(<span class="at">months =</span> <span class="dv">12</span><span class="sc">:</span><span class="dv">23</span>) </span>
 <span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model2)<span class="sc">$</span>tTable[<span class="st">"divorced"</span>, <span class="st">"p-value"</span>] <span class="co">#check p-value model 2</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -755,7 +761,7 @@ Original data obtained from the US Bureau of Labor Statistics. NLSY97 (National 
 <p>NB: The sample size and focal coefficient are considered “approximately reproduced” when the reproduction result is within 15% of the original result. For <em>p</em>-values, the result is considered “approximately reproduced” when it is within 0.05 points of the original.</p>
 <p><strong>Analyst success criteria:</strong> The claim will be considered reproducible if a generalized mixed model predicting the log odds of arrest meets the approximate reproduction criteria for the sample size and the approximate reproduction criteria for the coefficient of divorce.</p>
 <p><strong>Reproduction results</strong></p>
-<div class="cell" data-hash="score-1_cache/html/model3_9634a8cd97e5019ee5fa2bc060d62100">
+<div class="cell" data-hash="score-criminology_cache/html/model3_ede0a4281a8590ebd6f6d71089950239">
 <div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Model 3</span></span>
 <span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>model3 <span class="ot">&lt;-</span> <span class="fu">run_model</span>(<span class="at">months =</span> <span class="dv">24</span><span class="sc">:</span><span class="dv">35</span>) </span>
 <span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model3)<span class="sc">$</span>tTable[<span class="st">"divorced"</span>, <span class="st">"Value"</span>] <span class="co">#check estimate model 3</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -822,7 +828,7 @@ Original data obtained from the US Bureau of Labor Statistics. NLSY97 (National 
 <p>NB: The sample size and focal coefficient are considered “approximately reproduced” when the reproduction result is within 15% of the original result. For <em>p</em>-values, the result is considered “approximately reproduced” when it is within 0.05 points of the original.</p>
 <p><strong>Analyst success criteria:</strong> The claim will be considered reproducible if a generalized mixed model predicting the log odds of arrest meets the approximate reproduction criteria for the sample size, the coefficient of divorce, and the p-value.</p>
 <p><strong>Reproduction results</strong></p>
-<div class="cell" data-hash="score-1_cache/html/model4_40f9d20c8520ad0684a5a67d65eb4cac">
+<div class="cell" data-hash="score-criminology_cache/html/model4_120adbd5227e35e438e05ea4eeb6b8d6">
 <div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Model 4</span></span>
 <span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>model4 <span class="ot">&lt;-</span> <span class="fu">run_model</span>(<span class="at">months =</span> <span class="dv">36</span><span class="sc">:</span>longest_marriage) </span>
 <span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model4)<span class="sc">$</span>tTable[<span class="st">"divorced"</span>, <span class="fu">c</span>(<span class="st">"Value"</span>, <span class="st">"p-value"</span>)] <span class="co">#check estimate + p-value model 4</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -841,8 +847,8 @@ Original data obtained from the US Bureau of Labor Statistics. NLSY97 (National 
 </div>
 </div>
 </section>
-<section id="description-of-materials-provided" class="level2" data-number="1.6">
-<h2 data-number="1.6" class="anchored" data-anchor-id="description-of-materials-provided"><span class="header-section-number">1.6</span> Description of materials provided</h2>
+<section id="description-of-materials-provided" class="level2" data-number="3.6">
+<h2 data-number="3.6" class="anchored" data-anchor-id="description-of-materials-provided"><span class="header-section-number">3.6</span> Description of materials provided</h2>
 <p>All materials on <a href="https://osf.io/3j7gq/?view_only=b0e33287a13146d1a2d9c4ad938be094">the OSF project</a> may be shared publicly. Overview and description of the materials:</p>
 <ul>
 <li><code>BERSANI_Criminology_2013_zmYY_bushel_claims.md</code><br>
@@ -865,8 +871,8 @@ Transparency trail of the reproduction attempt. This includes the analysis pipel
 Knitted output of the transparency trail of the reproduction attempt. This includes the analysis pipeline and full results/output of the analysis script (applied to the unblinded data)</li>
 </ul>
 </section>
-<section id="references" class="level2" data-number="1.7">
-<h2 data-number="1.7" class="anchored" data-anchor-id="references"><span class="header-section-number">1.7</span> References</h2>
+<section id="references" class="level2" data-number="3.7">
+<h2 data-number="3.7" class="anchored" data-anchor-id="references"><span class="header-section-number">3.7</span> References</h2>
 <p>Bersani, B. E.; Doherty, E. (2013). When the ties that bind unwind: Examining the enduring and situational processes of change behind the marriage effect. <em>Criminology, 51</em>(2), 399. <a href="https://doi.org/10.1111/1745-9125.12008" class="uri">https://doi.org/10.1111/1745-9125.12008</a></p>
 <p>Bureau of Labor Statistics, U.S. Department of Labor. National Longitudinal Survey of Youth 1997 cohort, 1997-2009. Produced and distributed by the Center for Human Resource Research (CHRR), The Ohio State University. Columbus, OH: 2019.</p>
 
@@ -1178,13 +1184,13 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./index.html" class="pagination-link">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Introduction</span>
+      <a href="./score-meta.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">SCORE Meta-Analysis</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./score-2.html" class="pagination-link">
-        <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">SCORE Education</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./score-education.html" class="pagination-link">
+        <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">SCORE Education</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">

@@ -1,0 +1,158 @@
+---
+title: "SCORE Political Science"
+author: "Shilaan Alzahawi"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+---
+
+## Set up
+
+```{r install, eval=FALSE}
+# Install necessary R packages
+install.packages("here") #for a project-based workflow
+install.packages("haven")  #to read dta (Stata) file into R
+install.packages("tidyverse") #for data processing
+install.packages("broom") #for tidying the output of models
+remotes::install_github("crsh/papaja") # for reporting of results
+```
+
+```{r load, message=FALSE}
+# Load R packages
+library(here) 
+library(haven)
+library(tidyverse) 
+library(papaja)
+library(broom) 
+```
+
+## Read data
+
+This document reports a re-analysis (as part of the SCORE Multi-100 Project) of the following paper: 
+
+Einstein & Glick. (2016). Does Race Affect Access to Government Services? An Experiment Exploring Street-Level Bureaucrats and Access to Public Housing. *American Journal of Political Science*, 61(1), 100-116. <https://doi.org/10.1111/ajps.12252> 
+
+The Multi100 project is a crowdsourced empirical project aiming to estimate how robust published results and conclusions in social and behavioral sciences are to analysts’ analytical choices.
+
+```{r read-data}
+# Read data (Stata) file into R
+df <- read_dta(
+  file = here("data/HousingAuditAJPSFinalPublic_Unidentified.dta")
+  )
+```
+
+## Data processing
+
+I investigate the Claim "Hispanic housing applicants were less likely to be greeted by name than were white counterparts."
+
+The binary indicator `ProperName` (0/1) indicates whether the email response began with any sort of named greeting. This is the dependent variable. Note: coded `NA` in case an email was not returned.  
+
+There are 6 treatment names, each representing a different treatment group. These are:
+
+- `NumberAssignment = 1`: Black male named Tyrone
+- `NumberAssignment = 2`: Black female named Shanice
+- `NumberAssignment = 3`: Hispanic male named Santiago
+- `NumberAssignment = 4`: Hispanic female named Gabriela
+- `NumberAssignment = 5`: White male named Brett
+- `NumberAssignment = 6`: White female named Emily
+
+To compare Hispanic vs. White housing applicants only, I create a binary variable `Hispanic_vs_White`, with White applicants (Brett and Emily) coded as 0, Hispanic applicants (Santiago and Gabriela) coded as 1, and all other applicants coded as NA. This is the independent variable. 
+
+```{r process-data}
+# Create binary indicator for Hispanic vs. White housing applicants
+df <- df %>% 
+   mutate(
+     Hispanic_vs_White = case_when(
+       # Black applicants coded NA
+       NumberAssignment %in% 1:2 ~ NA_real_,
+       # Hispanic applicants coded 1
+       NumberAssignment %in% 3:4 ~ 1,
+       #White applicants coded 0
+       NumberAssignment %in% 5:6 ~ 0
+       ) 
+     )
+```
+
+```{r, include=FALSE}
+#Quality check: Is the binary indicator correctly coded?
+sum(df$Hispanic_vs_White, na.rm = TRUE) == sum(df$NumberAssignment == 3 | df$NumberAssignment == 4)
+sum(df$Hispanic_vs_White, na.rm = TRUE) == sum(grepl("Hispanic", df$TreatmentGroup))
+#Both data quality checks passed
+```
+
+## Statistical model
+
+I will run a logistic regression model, to predict the log odds of being greeted by name from a binary indicator for Hispanic vs. White housing applicants. My (very simple) model is as follows:
+
+$$
+\text{logit}\Big[\pi(x)\Big] = \beta_0 + \beta_1 x
+$$
+
+Where $\pi(x)$ stands for the success probability (i.e., probability of being greeted by name) as a function of $x$, where $x$ is a binary indicator ($x = 0$ for White applicants; $x = 1$ for Hispanic applicants). 
+
+I test the following hypotheses: 
+$$
+\begin{split}
+H_0&: \beta_1 \ge 0 \\
+H_1&: \beta_1 < 0
+\end{split}
+$$
+
+After running the logistic regression model, I will report the log odds of success, the odds of success, and the probabilities of success, for both Hispanic and White housing applicants. 
+
+$$
+\begin{split}
+\text{Log odds of success}&=\begin{cases}
+\beta_0 & ~~~~~~~~~~~~~~~~~~x = 0 \text{ (White applicant)} \\
+\beta_0 + \beta_1 & ~~~~~~~~~~~~~~~~~~x =1 \text{ (Hispanic applicant)} \\
+\end{cases} \\
+\text{Odds of success}&=\begin{cases}
+\exp(\beta_0) & ~~~~~~~~~x = 0 \\
+\exp(\beta_0 + \beta_1) & ~~~~~~~~~x =1 \\
+\end{cases} \\
+\text{Success probabilities}&=\begin{cases}
+\dfrac{\exp(\beta_0)}{1 + \exp(\beta_0)} & x = 0 \\
+\dfrac{\exp(\beta_0 + \beta_1)}{1 + \exp(\beta_0 + \beta_1)} & x =1 \\
+\end{cases}
+\end{split}
+$$
+
+## Data analysis
+
+```{r stat-model}
+# Run logistic regression
+fit <- glm(ProperName ~ Hispanic_vs_White, family = binomial, data = df)
+# Print tidy summary of model
+tidy(fit)
+```
+
+```{r reporting-function, include=FALSE}
+# Convenience function for reporting the results of a logistic regression
+report_slope <- function(input) {
+  # Obtain APA results
+  apa <- apa_print(input)
+  #remove b (will replace with beta hat)
+  slope <- gsub("b ", "", apa$full_result)[2]
+  slope #return slope
+}
+#Get estimated probabilities of success
+estimated_probabilities <- round(unique(fit$fitted.values)*100)
+```
+
+I find a negative effect for Hispanic housing applicants on the log odds of being greeted by name, $\hat \beta_1$ `r report_slope(fit)`. The estimated log odds of being greeted by name equal $\hat \beta_0 =$ `r round(coef(fit)[1], 2)` for White applicants and $\hat \beta_0 + \hat \beta_1 =$ `r round(sum(coef(fit)), 2)` for Hispanic applicants. The estimated odds of being greeted by name equal $\exp (\hat\beta_0) =$ `r round(exp(coef(fit)[1]), 2)` for White housing applicants, and $\exp(\hat \beta_0 + \hat \beta_1) =$ `r exp(sum(coef(fit)))` for Hispanic housing applicants. In other words, the estimated odds of being greeted by name are $1/\exp (\hat \beta_1) \approx$ `r round(1/exp(coef(fit)[2]), 2)` times as high for White housing applicants than for Hispanic applicants. 
+
+Translating this to the estimated probabilities of being greeted by name, I find that the estimated probability of being greeted by name is `r estimated_probabilities[1]`% for White applicants; for Hispanic applicants, the estimated probability of being greeted by name is `r estimated_probabilities[2]`%. Thus, the probability of being greeted by name is `r abs(diff(estimated_probabilities))` percentage points higher for White applicants than for Hispanic applicants. 
+
+|Being greeted by name|White applicants|Hispanic applicants|
+|---|---|---|
+|Log odds| $\hat \beta_0 =$ `r round(coef(fit)[1], 2)`|$\hat \beta_0 + \hat \beta_1 =$ `r round(sum(coef(fit)), 2)` |
+|Odds|$\exp (\hat\beta_0) =$ `r round(exp(coef(fit)[1]), 2)`|$\exp(\hat \beta_0 + \hat \beta_1) =$ `r exp(sum(coef(fit)))`|
+|Probability (%)|$\text{Odds}/(1 + \text{Odds})=$ `r estimated_probabilities[1]`|$\text{Odds}/(1 + \text{Odds})=$ `r estimated_probabilities[2]`|
+
+## Reproducibility
+
+Note that all of the reported results above are fully reproducible and were automatically generated with in-line R code. For example, the first result ($\hat \beta_1$ `r report_slope(fit)`) can be generated as follows:
+
+```{r, message = FALSE}
+apa_print(fit)$full_result[2]
+```
+
+

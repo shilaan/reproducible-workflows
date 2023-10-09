@@ -8,9 +8,10 @@ book:
   date: "10/2/2023"
   chapters:
     - index.qmd
-    - score-1.qmd
-    - score-2.qmd
-    - score-3.qmd
+    - score-political.qmd
+    - score-meta.qmd
+    - score-criminology.qmd
+    - score-education.qmd
 
 #bibliography: 
 
