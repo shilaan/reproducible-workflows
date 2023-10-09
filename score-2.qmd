@@ -399,6 +399,9 @@ Coefficient   |$\gamma_{10}$ = 0.08|$\gamma_{10}$ = 0.08|0.07 $\le \gamma_{10} \
 Test statistic|t = 4.01|t = 4.01|3.41 $\le$ t $\le$ 4.61|t < 3.41 or t > 4.61|
 p-value       |p < .001|p < .001|.001 $\le$ p $\le$ .051|p > .051            |
 
+NB: The sample size and focal coefficient are considered "approximately reproduced" when the reproduction result is within 15% of the original result. For *p*-values, the result is considered "approximately reproduced" when it is within 0.05 points of the original. 
+
+
 **Analyst success criteria:** Because not all covariates are available in the reproduction dataset (which will likely impact the coefficient estimates), the claim will be considered reproducible if it meets the approximate reproduction criteria for the *p*-value and the focal coefficient is of the same sign (i.e., a positive coefficient estimate). 
 
 **Reproduction results**
@@ -439,6 +442,9 @@ fit_efficacy %>%
 Coefficient   |$\gamma_{20}$ = 0.14|$\gamma_{20}$ = 0.14|0.12 $\le \gamma_{20} \le$ 0.16|$\gamma_{20}$ < 0.12 or $\gamma_{20}$ > 0.16|
 Test statistic|t = 7.39|t = 7.39|6.28 $\le$ t $\le$ 8.50|t < 6.28 or t > 8.50|
 p-value       |p < .001|p < .001|.001 $\le$ p $\le$ .051|p > .051            |
+
+NB: The sample size and focal coefficient are considered "approximately reproduced" when the reproduction result is within 15% of the original result. For *p*-values, the result is considered "approximately reproduced" when it is within 0.05 points of the original. 
+
 
 
 **Analyst success criteria:** Because not all covariates are available in the reproduction dataset (which will likely impact the coefficient estimates), the claim will be considered reproducible if it meets the approximate reproduction criteria for the *p*-value and the focal coefficient is of the same sign (i.e., a positive coefficient estimate). 
@@ -481,6 +487,9 @@ Coefficient   |$\gamma_{10}$ = 0.17|$\gamma_{10}$ = 0.17|0.14 $\le \gamma_{10} \
 Test statistic|t = 10.40|t = 10.40|8.84 $\le$ t $\le$ 11.96|t < 8.84 or t > 11.96|
 p-value       |p < .001|p < .001|.001 $\le$ p $\le$ .051|p > .051            |
 
+NB: The sample size and focal coefficient are considered "approximately reproduced" when the reproduction result is within 15% of the original result. For *p*-values, the result is considered "approximately reproduced" when it is within 0.05 points of the original. 
+
+
 **Analyst success criteria:** Because not all covariates are available in the reproduction dataset (which will likely impact the coefficient estimates), the claim will be considered reproducible if it meets the approximate reproduction criteria for the *p*-value and the focal coefficient is of the same sign (i.e., a positive coefficient estimate). 
 
 **Reproduction results**
@@ -518,6 +527,9 @@ fit_academic %>%
 Coefficient   |$\gamma_{20}$ = 0.16|$\gamma_{20}$ = 0.16|0.14 $\le \gamma_{20} \le$ 0.18|$\gamma_{20}$ < 0.14 or $\gamma_{20}$ > 0.18|
 Test statistic|t = 9.74|t = 9.74|8.28 $\le$ t $\le$ 11.20|t < 8.28 or t > 11.20|
 p-value       |p < .001|p < .001|.001 $\le$ p $\le$ .051|p > .051            |
+
+NB: The sample size and focal coefficient are considered "approximately reproduced" when the reproduction result is within 15% of the original result. For *p*-values, the result is considered "approximately reproduced" when it is within 0.05 points of the original. 
+
 
 
 **Analyst success criteria:** Because not all covariates are available in the reproduction dataset (which will likely impact the coefficient estimates), the claim will be considered reproducible if it meets the approximate reproduction criteria for the *p*-value and the focal coefficient is of the same sign (i.e., a positive coefficient estimate). 
@@ -559,6 +571,9 @@ Coefficient   |$\gamma_{05}$ = 0.31|$\gamma_{05}$ = 0.31|0.26 $\le \gamma_{05} \
 Test statistic|t = 3.84|t = 3.84|3.26 $\le$ t $\le$ 4.42|t < 3.26 or t > 4.42|
 p-value       |p < .001|p < .001|.001 $\le$ p $\le$ .051|p > .051            |
 
+NB: The sample size and focal coefficient are considered "approximately reproduced" when the reproduction result is within 15% of the original result. For *p*-values, the result is considered "approximately reproduced" when it is within 0.05 points of the original. 
+
+
 **Analyst success criteria:** Because not all covariates are available in the reproduction dataset (which will likely impact the coefficient estimates), the claim will be considered reproducible if it meets the approximate reproduction criteria for the *p*-value and the focal coefficient is of the same sign (i.e., a positive coefficient estimate). 
 
 **Reproduction results**
@@ -595,6 +610,9 @@ fit_academic %>%
 Coefficient   |$\gamma_{10}$ = 0.22|$\gamma_{10}$ = 0.22|0.19 $\le \gamma_{10} \le$ 0.25|$\gamma_{10}$ < 0.19 or $\gamma_{10}$ > 0.25|
 Test statistic|t = 18.57|t = 18.57|15.78 $\le$ t $\le$ 21.36|t < 15.78 or t > 21.36|
 p-value       |p < .001|p < .001|.001 $\le$ p $\le$ .051|p > .051            |
+
+NB: The sample size and focal coefficient are considered "approximately reproduced" when the reproduction result is within 15% of the original result. For *p*-values, the result is considered "approximately reproduced" when it is within 0.05 points of the original. 
+
 
 **Analyst success criteria:**  Because not all covariates are available in the reproduction dataset (which will likely impact the coefficient estimates), the claim will be considered reproducible if it meets the approximate reproduction criteria for the *p*-value and the focal coefficient is of the same sign (i.e., a positive coefficient estimate). 
 
@@ -633,6 +651,9 @@ fit_engagement %>%
 Coefficient   |$\gamma_{20}$ = 0.35|$\gamma_{20}$ = 0.35|0.30 $\le \gamma_{20} \le$ 0.40|$\gamma_{20}$ < 0.30 or $\gamma_{20}$ > 0.40|
 Test statistic|t = 32.28|t = 32.28|27.44 $\le$ t $\le$ 37.12|t < 27.44 or t > 37.12|
 p-value       |p < .001|p < .001|.001 $\le$ p $\le$ .051|p > .051            |
+
+NB: The sample size and focal coefficient are considered "approximately reproduced" when the reproduction result is within 15% of the original result. For *p*-values, the result is considered "approximately reproduced" when it is within 0.05 points of the original. 
+
 
 
 **Analyst success criteria:** Because not all covariates are available in the reproduction dataset (which will likely impact the coefficient estimates), the claim will be considered reproducible if it meets the approximate reproduction criteria for the *p*-value and the focal coefficient is of the same sign (i.e., a positive coefficient estimate). 

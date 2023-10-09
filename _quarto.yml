@@ -10,12 +10,14 @@ book:
     - index.qmd
     - score-1.qmd
     - score-2.qmd
+    - score-3.qmd
 
 #bibliography: 
 
 format:
   html:
     theme: [united, custom.scss]
+    toc-expand: true
     link-external-newwindow: true
     link-external-icon: true
     self-contained: false
