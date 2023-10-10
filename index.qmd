@@ -1,3 +1,4 @@
 # Introduction {.unnumbered}
 
-Description.
+This webpage contains a portfolio of some of the reproducible workflows I have generated as a Reproduction and Replication Analyst for the DARPA-SCORE Project (i.e., the Systematizing Confidence in Open Research and Evidence Project commissioned by the Defense Advanced Research Projects Agency) as well as my own research projects. 
+

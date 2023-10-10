@@ -1,6 +1,7 @@
 project:
   type: book
   output-dir: docs
+  resources: [.nojekyll]
 
 book:
   title: "Reproducible Workflows"
@@ -12,6 +13,7 @@ book:
     - score-meta.qmd
     - score-criminology.qmd
     - score-education.qmd
+    - management.qmd
 
 #bibliography: 
 
